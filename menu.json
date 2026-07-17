@@ -1,0 +1,590 @@
+{
+  "menu_items": {
+    "pizzas": [
+      {
+        "id": "calabresa",
+        "name": "Calabresa",
+        "description": "Molho, mussarela, calabresa e orégano.",
+        "image": "assets/gourmet_calabresa.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "Mais Pedida",
+        "available": true
+      },
+      {
+        "id": "marguerita",
+        "name": "Marguerita",
+        "description": "Molho, mussarela, tomate em rodelas, manjericão, azeitona e orégano.",
+        "image": "assets/gourmet_margherita.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "Vegetariana",
+        "available": true
+      },
+      {
+        "id": "napolitana",
+        "name": "Napolitana",
+        "description": "Molho, mussarela, tomate, azeitona e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "portuguesa",
+        "name": "Portuguesa",
+        "description": "Molho, mussarela, presunto, ovo, cebola, pimentão, azeitona e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "Clássica",
+        "available": true
+      },
+      {
+        "id": "americana",
+        "name": "Americana",
+        "description": "Molho, mussarela, frango desfiado, champignon, azeitona e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "frango_catupiry",
+        "name": "Frango com Catupiry",
+        "description": "Molho, mussarela, frango catupiry xadrez e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "alho_oleo",
+        "name": "Alho e Óleo",
+        "description": "Molho, mussarela, alho e óleo ao molho 4 queijos e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "atum",
+        "name": "Atum",
+        "description": "Molho, mussarela, atum e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "vegetariana",
+        "name": "Vegetariana",
+        "description": "Molho, mussarela, palmito, champignon, brócolis, milho, azeitona e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "Vegetariana",
+        "available": true
+      },
+      {
+        "id": "brocolis",
+        "name": "Brócolis",
+        "description": "Molho, mussarela, brócolis ao molho branco, catupiry e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "promocional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "carijo",
+        "name": "Carijó (Fricassê)",
+        "description": "Molho, mussarela, frango ao molho, milho, ervilha, catupiry e batata palha.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "alcapone",
+        "name": "Alcapone",
+        "description": "Molho, mussarela, provolone, bacon, milho e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "italiana",
+        "name": "Italiana",
+        "description": "Molho, mussarela, milho, ervilha, salame italiano, catupiry, azeitona e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "strogonoff_frango",
+        "name": "Strogonoff de Frango",
+        "description": "Molho, mussarela, strogonoff de frango, orégano e batata palha.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "cinco_queijos",
+        "name": "5 Queijos",
+        "description": "Molho, mussarela, parmesão, provolone, catupiry, cheddar, azeitona e orégano.",
+        "image": "assets/gourmet_quatro_queijos.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "Mais Pedida",
+        "available": true
+      },
+      {
+        "id": "alho_poro",
+        "name": "Alho Poró",
+        "description": "Molho, mussarela, alho poró ao molho e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "tomate_seco_rucula",
+        "name": "Tomate Seco com Rúcula",
+        "description": "Molho, mussarela, tomate seco, parmesão e rúcula.",
+        "image": "assets/gourmet_margherita.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "Vegetariana",
+        "available": true
+      },
+      {
+        "id": "bacon_quatro_queijos",
+        "name": "Bacon com 4 Queijos",
+        "description": "Molho, mussarela, bacon, molho 4 queijos e orégano.",
+        "image": "assets/gourmet_quatro_queijos.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "calabresa_cebola_caramelizada",
+        "name": "Calabresa com Cebola Caramelizada",
+        "description": "Molho, mussarela, provolone, calabresa defumada, cebola caramelizada e orégano.",
+        "image": "assets/gourmet_calabresa.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "Premium",
+        "available": true
+      },
+      {
+        "id": "frango_barbecue",
+        "name": "Frango com Barbecue",
+        "description": "Molho, mussarela, frango em cubos, molho barbecue e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "bah_tche",
+        "name": "Bah Tchê",
+        "description": "Molho, mussarela, frango, bacon, pimentões, milho, cebola, catupiry e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "canadense",
+        "name": "Canadense",
+        "description": "Molho, mussarela, lombo, champignon, bacon crocante, cebola e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "mexicana",
+        "name": "Mexicana",
+        "description": "Molho, mussarela, bacon, calabresa, pimentão, doritos e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "coracao",
+        "name": "Coração",
+        "description": "Molho, mussarela, coração ao molho e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "Favorito",
+        "available": true
+      },
+      {
+        "id": "file",
+        "name": "Filé",
+        "description": "Molho, mussarela, filé ao molho e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "file_mostarda",
+        "name": "Filé com Mostarda",
+        "description": "Molho, mussarela, iscas de carne com molho mostarda.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "strogonoff_carne",
+        "name": "Strogonoff de Carne",
+        "description": "Molho, mussarela, strogonoff de carne, orégano e batata palha.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "pepperoni",
+        "name": "Pepperoni",
+        "description": "Molho, mussarela, pepperoni, azeitona e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "Mais Pedida",
+        "available": true
+      },
+      {
+        "id": "alemanha",
+        "name": "Alemanha",
+        "description": "Molho, mussarela, calabresa, abacaxi, manjericão e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "imperio",
+        "name": "Império",
+        "description": "Molho, mussarela, calabresa, filé, bacon, tomate, catupiry, azeitona e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "Super Premium",
+        "available": true
+      },
+      {
+        "id": "file_barbecue",
+        "name": "Filé com Barbecue",
+        "description": "Molho, mussarela, iscas de carne, barbecue e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "costela_uruguaia",
+        "name": "Costela Uruguaia",
+        "description": "Molho de cerveja preta, mussarela, costela desfiada e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "Destaque",
+        "available": true
+      },
+      {
+        "id": "lombo_abacaxi",
+        "name": "Lombo com Abacaxi",
+        "description": "Molho, mussarela, lombo, abacaxi, catupiry e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "camarao",
+        "name": "Camarão",
+        "description": "Molho, mussarela, camarão ao alho e óleo e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "camarao",
+        "badge": "Premium",
+        "available": true
+      },
+      {
+        "id": "camarao_rose",
+        "name": "Camarão ao Molho Rosé",
+        "description": "Molho, mussarela, camarão ao molho rose e orégano.",
+        "image": "assets/pizza_hero.png",
+        "category": "salgadas",
+        "categoryType": "camarao",
+        "badge": "Premium",
+        "available": true
+      },
+      {
+        "id": "mms",
+        "name": "M&Ms",
+        "description": "Chocolate ao leite e M&Ms coloridos.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "promocional",
+        "badge": "Kids",
+        "available": true
+      },
+      {
+        "id": "banana_nevada",
+        "name": "Banana Nevada",
+        "description": "Banana em rodelas, canela, açúcar e chocolate branco.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "promocional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "banana_chocolate",
+        "name": "Banana com Chocolate",
+        "description": "Doce de leite, banana e chocolate ao leite.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "promocional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "pacoquinha",
+        "name": "Paçoquinha",
+        "description": "Chocolate ao leite e paçoquinha.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "promocional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "chocolate_morango",
+        "name": "Chocolate com Morango",
+        "description": "Chocolate ao leite, leite condensado e morangos frescos.",
+        "image": "assets/gourmet_doce_morango.png",
+        "category": "doces",
+        "categoryType": "tradicional",
+        "badge": "Mais Pedida",
+        "available": true
+      },
+      {
+        "id": "charge",
+        "name": "Charge",
+        "description": "Chocolate ao leite, doce de leite e amendoim.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "dois_amores",
+        "name": "Dois Amores",
+        "description": "Chocolate branco e chocolate preto.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "california",
+        "name": "Califórnia",
+        "description": "Figo, abacaxi, pêssego e cereja.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "tradicional",
+        "badge": "Vegetariana",
+        "available": true
+      },
+      {
+        "id": "prestigio",
+        "name": "Prestígio",
+        "description": "Chocolate ao leite e coco ralado.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "romeu_julieta",
+        "name": "Romeu e Julieta",
+        "description": "Mussarela e goiabada cremosa.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "bis",
+        "name": "Bis",
+        "description": "Chocolate preto, chocolate branco, bis preto e bis branco.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "negresco",
+        "name": "Negresco",
+        "description": "Chocolate preto, creme e bolacha Negresco triturada.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "tradicional",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "kinder_bueno",
+        "name": "Kinder Bueno",
+        "description": "Creme de Leite Ninho, morango e Kinder Bueno.",
+        "image": "assets/gourmet_doce_morango.png",
+        "category": "doces",
+        "categoryType": "especial",
+        "badge": "Doce Premium",
+        "available": true
+      },
+      {
+        "id": "estikadinho",
+        "name": "Estikadinho",
+        "description": "Chocolate branco, estikadinho, morango e creme de leite.",
+        "image": "assets/gourmet_doce_morango.png",
+        "category": "doces",
+        "categoryType": "especial",
+        "badge": "Doce Premium",
+        "available": true
+      },
+      {
+        "id": "ouro_branco",
+        "name": "Ouro Branco",
+        "description": "Chocolate branco e bombom Ouro Branco.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "chocolate_nozes",
+        "name": "Chocolate Branco com Nozes",
+        "description": "Chocolate branco e nozes raladas.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      },
+      {
+        "id": "kitkat",
+        "name": "KitKat",
+        "description": "Chocolate preto, creme de KitKat e pedaços de KitKat.",
+        "image": "assets/pizza_chocolate.png",
+        "category": "doces",
+        "categoryType": "especial",
+        "badge": "",
+        "available": true
+      }
+    ],
+    "bebidas": [
+      {
+        "id": "coca_350",
+        "name": "Coca-Cola Lata 350ml",
+        "description": "Refrigerante Coca-Cola lata 350ml gelado.",
+        "image": "assets/gourmet_bebida.png",
+        "category": "bebidas",
+        "price": 6.0,
+        "available": true
+      },
+      {
+        "id": "guarana_350",
+        "name": "Guaraná Antarctica Lata 350ml",
+        "description": "Refrigerante Guaraná Antarctica lata 350ml gelado.",
+        "image": "assets/gourmet_bebida.png",
+        "category": "bebidas",
+        "price": 5.5,
+        "available": true
+      },
+      {
+        "id": "coca_2l",
+        "name": "Coca-Cola 2 Litros",
+        "description": "Refrigerante Coca-Cola garrafa 2 litros bem gelado.",
+        "image": "assets/gourmet_bebida.png",
+        "category": "bebidas",
+        "price": 12.0,
+        "available": true
+      },
+      {
+        "id": "suco_uva",
+        "name": "Suco de Uva Integral Prats 300ml",
+        "description": "Suco de uva 100% integral e natural.",
+        "image": "assets/gourmet_bebida.png",
+        "category": "bebidas",
+        "price": 8.0,
+        "available": true
+      },
+      {
+        "id": "agua_mineral",
+        "name": "Água Mineral 500ml",
+        "description": "Água mineral natural sem gás.",
+        "image": "assets/gourmet_bebida.png",
+        "category": "bebidas",
+        "price": 4.0,
+        "available": true
+      }
+    ]
+  },
+  "pizza_prices": {
+    "broto": { "promocional": 65.0, "tradicional": 70.0, "especial": 75.0, "camarao": 80.0 },
+    "media": { "promocional": 75.0, "tradicional": 80.0, "especial": 85.0, "camarao": 90.0 },
+    "grande": { "promocional": 90.0, "tradicional": 100.0, "especial": 110.0, "camarao": 115.0 },
+    "vulcao": { "promocional": 90.0, "tradicional": 100.0, "especial": 110.0, "camarao": 110.0 },
+    "trem": { "promocional": 160.0, "tradicional": 175.0, "especial": 195.0, "camarao": 210.0 }
+  },
+  "borders": {
+    "sem-borda": { "name": "Sem Borda", "price": 0.0 },
+    "catupiry": { "name": "Borda de Catupiry", "price": 8.0 },
+    "cheddar": { "name": "Borda de Cheddar", "price": 8.0 },
+    "chocolate": { "name": "Borda de Chocolate Duo", "price": 10.0 }
+  },
+  "promo_config": {
+    "show_popup": true,
+    "facebook_url": "https://www.facebook.com/photo?fbid=869832745812820&set=a.127662080029894"
+  }
+}

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semeador de Banco de Dados | Mundo da Pizza</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #d32f2f;
+            --primary-dark: #b71c1c;
+            --bg: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #f5f5f5;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+            --success: #2e7d32;
+            --error: #c62828;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        .section {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: var(--text-main);
+            font-size: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            background-color: #2b2b2b;
+            color: var(--text-main);
+            border-radius: 6px;
+            font-family: inherit;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:disabled {
+            background-color: #555555;
+            cursor: not-allowed;
+        }
+
+        .console {
+            background-color: #0d0d0d;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .log-entry.info { color: #88c0d0; }
+        .log-entry.success { color: #a3be8c; }
+        .log-entry.error { color: #bf616a; }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #2b2b2b;
+            border-radius: 4px;
+            height: 8px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--success);
+            transition: width 0.2s;
+        }
+
+        .alert-box {
+            background-color: rgba(211, 47, 47, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Semeador de Banco de Dados</h1>
+    <p class="subtitle">Importe o cardápio local para o Firebase Firestore</p>
+
+    <div class="alert-box">
+        <strong>Atenção:</strong> Certifique-se de que as regras do Cloud Firestore no painel do Firebase estão configuradas temporariamente para permitir escritas (ex: <code>allow read, write: if true;</code>) ou autentique-se abaixo com uma conta administrativa para prosseguir com a semeadura.
+    </div>
+
+    <!-- Auth Section -->
+    <div class="section">
+        <h3>1. Autenticação Administrativa (Opcional)</h3>
+        <div class="form-group">
+            <label for="email">E-mail Administrativo</label>
+            <input type="email" id="email" placeholder="admin@mundodapizza.com">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <label for="password">Senha</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+    </div>
+
+    <!-- Database Action Section -->
+    <div class="section" style="margin-bottom: 0;">
+        <h3>2. Executar Importação</h3>
+        <button id="btnSeed" class="btn">Iniciar Semeadura do Cardápio</button>
+        
+        <div class="progress-bar-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Output Console -->
+    <div class="console" id="console">
+        <div class="log-entry info">> Console inicializado. Pronto para iniciar.</div>
+    </div>
+</div>
+
+<!-- Firebase SDK Compat -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<!-- Project Config -->
+<script src="firebase-config.js"></script>
+
+<script>
+    const btnSeed = document.getElementById('btnSeed');
+    const consoleDiv = document.getElementById('console');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+
+    function log(message, type = 'info') {
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.innerText = `> ${message}`;
+        consoleDiv.appendChild(entry);
+        consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    }
+
+    btnSeed.addEventListener('click', async () => {
+        btnSeed.disabled = true;
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        
+        log('Iniciando processo de semeadura...', 'info');
+
+        // Initialize Firebase
+        if (typeof firebase === 'undefined') {
+            log('Erro: Firebase SDK não carregado!', 'error');
+            btnSeed.disabled = false;
+            return;
+        }
+
+        if (typeof firebaseConfig === 'undefined' || firebaseConfig.apiKey === 'SUA_API_KEY') {
+            log('Erro: Configurações do Firebase ausentes ou inválidas em firebase-config.js!', 'error');
+            btnSeed.disabled = false;
+            return;
+        }
+
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            log('Firebase inicializado com sucesso.', 'success');
+        } catch (err) {
+            log('Erro ao inicializar o Firebase: ' + err.message, 'error');
+            btnSeed.disabled = false;
+            return;
+        }
+
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Check for Authentication
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (email && password) {
+            log(`Tentando autenticar como ${email}...`, 'info');
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                log('Autenticação realizada com sucesso!', 'success');
+            } catch (err) {
+                log('Falha na autenticação: ' + err.message + '. Tentando prosseguir sem auth...', 'error');
+            }
+        } else {
+            log('Nenhuma credencial fornecida. Tentando migrar sem autenticação (regras públicas)...', 'info');
+        }
+
+        // Fetch menu.json
+        log('Buscando arquivo menu.json local...', 'info');
+        let menuData;
+        try {
+            const response = await fetch('menu.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            menuData = await response.json();
+            log('menu.json carregado com sucesso!', 'success');
+        } catch (err) {
+            log('Falha ao carregar menu.json: ' + err.message, 'error');
+            btnSeed.disabled = false;
+            return;
+        }
+
+        // Migration process
+        try {
+            const TAXAS_ENTREGA = {
+                'centro': { name: 'Centro', fee: 10.00 },
+                'logradouro': { name: 'Logradouro', fee: 10.00 },
+                'juriti': { name: 'Juriti', fee: 10.00 },
+                'pousada': { name: 'Pousada', fee: 15.00 },
+                'bavaria': { name: 'Bavária', fee: 15.00 },
+                'pia': { name: 'Pia', fee: 15.00 },
+                'vila-rica': { name: 'Vila Rica', fee: 18.00 },
+                'vale-verde': { name: 'Vale Verde', fee: 18.00 },
+                'vila-germania': { name: 'Vila Germânia', fee: 18.00 },
+                'linha-imperial': { name: 'Linha Imperial', fee: 22.00 },
+                'vila-olinda': { name: 'Vila Olinda', fee: 25.00 },
+                'linha-olinda': { name: 'Linha Olinda', fee: 30.00 },
+                'pinhal': { name: 'Pinhal', fee: 40.00 }
+            };
+
+            const steps = [
+                // 1. Config docs
+                { name: 'config/status', action: () => db.collection('config').doc('status').set({ isOpen: true, open: true }) },
+                { name: 'config/settings', action: () => db.collection('config').doc('settings').set({
+                    whatsapp: '5554996985724',
+                    whatsappFormatted: '(54) 99698-5724',
+                    promoActive: true,
+                    promoPrice: 95.00,
+                    promoSize: 'grande',
+                    promoDiscountActive: false,
+                    promoDiscountPercent: 20
+                }) },
+                { name: 'config/delivery_fees', action: () => db.collection('config').doc('delivery_fees').set(TAXAS_ENTREGA) },
+                { name: 'config/pizza_prices', action: () => db.collection('config').doc('pizza_prices').set(menuData.pizza_prices || {}) },
+                
+                // 2. Categorias
+                { name: 'categoria/pizzas', action: () => db.collection('categorias').doc('pizzas').set({ id: 'pizzas', name: 'Pizzas', icon: '🍕', order: 1 }) },
+                { name: 'categoria/bebidas', action: () => db.collection('categorias').doc('bebidas').set({ id: 'bebidas', name: 'Bebidas', icon: '🥤', order: 2 }) },
+                
+                // 3. Banners
+                { name: 'banner/banner1', action: () => db.collection('banners').doc('banner1').set({ id: 'banner1', tag: 'Promoção', title: 'Monte sua Pizza', subtitle: 'Escolha os tamanhos, adicione bordas recheadas e monte do seu jeito!', gradient: 'linear-gradient(135deg, #e65100 0%, #1a0a0a 100%)', image: 'assets/pizza_hero.png' }) },
+                { name: 'banner/banner2', action: () => db.collection('banners').doc('banner2').set({ id: 'banner2', tag: 'Forno a Lenha', title: 'Ingredientes Selecionados', subtitle: 'Pizzas artesanais com os melhores ingredientes da serra', gradient: 'linear-gradient(135deg, #ffd600 0%, #3e2723 100%)', image: 'assets/pizza_calabresa.png' }) },
+                
+                // 4. Usuários Administrativos
+                { name: 'usuarios/UDZ5k3HciTVHJ2Uv0PRXq1s5Rug1', action: () => db.collection('usuarios').doc('UDZ5k3HciTVHJ2Uv0PRXq1s5Rug1').set({ uid: 'UDZ5k3HciTVHJ2Uv0PRXq1s5Rug1', role: 'admin', name: 'Administrador 1' }) },
+                { name: 'usuarios/ZpAvTThp6CWmhOAI4DDqiKCq7vW2', action: () => db.collection('usuarios').doc('ZpAvTThp6CWmhOAI4DDqiKCq7vW2').set({ uid: 'ZpAvTThp6CWmhOAI4DDqiKCq7vW2', role: 'admin', name: 'Administrador 2' }) }
+            ];
+
+            // Add pizzas to queue
+            const pizzas = (menuData.menu_items && menuData.menu_items.pizzas) || [];
+            pizzas.forEach(pizza => {
+                steps.push({
+                    name: `produto/pizza_${pizza.id}`,
+                    action: () => db.collection('produtos').doc(pizza.id).set({
+                        ...pizza,
+                        category: 'pizzas',
+                        available: pizza.available !== false
+                    })
+                });
+            });
+
+            // Add bebidas to queue
+            const bebidas = (menuData.menu_items && menuData.menu_items.bebidas) || [];
+            bebidas.forEach(bebida => {
+                steps.push({
+                    name: `produto/bebida_${bebida.id}`,
+                    action: () => db.collection('produtos').doc(bebida.id).set({
+                        ...bebida,
+                        category: 'bebidas',
+                        available: bebida.available !== false
+                    })
+                });
+            });
+
+            // Add borders to queue
+            const borders = menuData.borders || {};
+            Object.keys(borders).forEach(key => {
+                const border = borders[key];
+                steps.push({
+                    name: `produto/borda_${key}`,
+                    action: () => db.collection('produtos').doc(`borda_${key}`).set({
+                        id: `borda_${key}`,
+                        name: border.name,
+                        price: border.price,
+                        category: 'bordas',
+                        subcategory: key.toLowerCase().includes('chocolate') ? 'doces' : 'salgadas',
+                        available: true
+                    })
+                });
+            });
+
+            const totalSteps = steps.length;
+            log(`Total de ${totalSteps} documentos para importar. Iniciando gravação...`, 'info');
+
+            let completed = 0;
+            for (const step of steps) {
+                try {
+                    await step.action();
+                    completed++;
+                    const pct = Math.round((completed / totalSteps) * 100);
+                    progressBar.style.width = `${pct}%`;
+                    log(`Importado com sucesso: ${step.name} (${pct}%)`, 'success');
+                } catch (writeErr) {
+                    log(`Erro ao importar ${step.name}: ${writeErr.message}`, 'error');
+                }
+            }
+
+            log('Processo de semeadura finalizado!', 'success');
+            log(`Total importado com sucesso: ${completed}/${totalSteps}`, 'success');
+
+        } catch (err) {
+            log('Erro catastrófico no processo: ' + err.message, 'error');
+        }
+
+        btnSeed.disabled = false;
+    });
+</script>
+</body>
+</html>

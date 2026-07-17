@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Função para verificar se o usuário está autenticado
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Função para verificar se o usuário é admin (baseado na regra do Firestore)
+    function isAdmin() {
+      return isAuth() && (
+        !firestore.exists(/databases/(default)/documents/usuarios/$(request.auth.uid)) ||
+        firestore.get(/databases/(default)/documents/usuarios/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    // Pasta de produtos: leitura livre, gravação para administradores autenticados
+    match /produtos/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
