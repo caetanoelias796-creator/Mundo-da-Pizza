@@ -269,7 +269,8 @@ function renderAcaiAdditionsLists() {
     if (!freeContainer || !paid5Container || !paid25Container) return;
     
     freeContainer.innerHTML = '';
-    ACAI_FREE_ADDITIONS.forEach(name => {
+    ACAI_FREE_ADDITIONS.forEach(item => {
+        const name = typeof item === 'string' ? item : item.name;
         const checked = currentAcai.freeAdditions.includes(name) ? 'checked' : '';
         const label = document.createElement('label');
         label.className = 'border-card';
@@ -284,30 +285,34 @@ function renderAcaiAdditionsLists() {
     });
     
     paid5Container.innerHTML = '';
-    ACAI_PAID_5.forEach(name => {
+    ACAI_PAID_5.forEach(item => {
+        const name = typeof item === 'string' ? item : item.name;
+        const price = typeof item === 'string' ? 5 : (item.price !== undefined ? item.price : 5);
         const checked = currentAcai.paidAdditions.some(a => a.name === name) ? 'checked' : '';
         const label = document.createElement('label');
         label.className = 'border-card';
         label.innerHTML = `
-            <input type="checkbox" name="acai-paid-add" value="${name}" data-price="5" onchange="handleAcaiPaidClick(this)" ${checked}>
+            <input type="checkbox" name="acai-paid-add" value="${name}" data-price="${price}" onchange="handleAcaiPaidClick(this)" ${checked}>
             <div class="border-card-content">
                 <span>${name}</span>
-                <span class="border-price">+ R$ 5,00</span>
+                <span class="border-price">+ R$ ${price.toFixed(2).replace('.', ',')}</span>
             </div>
         `;
         paid5Container.appendChild(label);
     });
     
     paid25Container.innerHTML = '';
-    ACAI_PAID_2_5.forEach(name => {
+    ACAI_PAID_2_5.forEach(item => {
+        const name = typeof item === 'string' ? item : item.name;
+        const price = typeof item === 'string' ? 2.5 : (item.price !== undefined ? item.price : 2.5);
         const checked = currentAcai.paidAdditions.some(a => a.name === name) ? 'checked' : '';
         const label = document.createElement('label');
         label.className = 'border-card';
         label.innerHTML = `
-            <input type="checkbox" name="acai-paid-add" value="${name}" data-price="2.5" onchange="handleAcaiPaidClick(this)" ${checked}>
+            <input type="checkbox" name="acai-paid-add" value="${name}" data-price="${price}" onchange="handleAcaiPaidClick(this)" ${checked}>
             <div class="border-card-content">
                 <span>${name}</span>
-                <span class="border-price">+ R$ 2,50</span>
+                <span class="border-price">+ R$ ${price.toFixed(2).replace('.', ',')}</span>
             </div>
         `;
         paid25Container.appendChild(label);
@@ -2335,12 +2340,18 @@ function initMenuData() {
                 BORDAS[key] = { name: item.name, price: item.price, category: item.subcategory || 'ambas' };
             } else if (item.category === 'acai_adicionais') {
                 if (item.available !== false) {
-                    if (item.type === 'free') {
-                        freeAdds.push(item.name);
-                    } else if (item.type === 'paid_5') {
-                        paid5.push(item.name);
-                    } else if (item.type === 'paid_2.5') {
-                        paid25.push(item.name);
+                    if (item.type === 'free' || item.price === 0) {
+                        freeAdds.push(item);
+                    } else if (item.type === 'paid_5' || item.price === 5) {
+                        paid5.push(item);
+                    } else if (item.type === 'paid_2.5' || item.price === 2.5) {
+                        paid25.push(item);
+                    } else {
+                        if ((item.price || 0) > 3) {
+                            paid5.push(item);
+                        } else {
+                            paid25.push(item);
+                        }
                     }
                 }
             } else if (item.category) {

@@ -226,8 +226,9 @@
                 <!-- Submenu Tabs -->
                 <div class="filters-bar">
                     <nav class="filter-tabs">
-                        <button class="filter-tab active" id="tabFlavors" onclick="setMenuTab('flavors')">Sabores de Pizza</button>
-                        <button class="filter-tab" id="tabCalzones" onclick="setMenuTab('calzones')">Pizzas Doces</button>
+                        <button class="filter-tab active" id="tabFlavors" onclick="setMenuTab('flavors')">Pizzas Salgadas</button>
+                        <button class="filter-tab" id="tabSweetPizzas" onclick="setMenuTab('sweetpizzas')">Pizzas Doces</button>
+                        <button class="filter-tab" id="tabCalzones" onclick="setMenuTab('calzones')">Calzones</button>
                         <button class="filter-tab" id="tabBebidas" onclick="setMenuTab('bebidas')">Bebidas</button>
                         <button class="filter-tab" id="tabLanches" onclick="setMenuTab('lanches')">Lanches</button>
                         <button class="filter-tab" id="tabAcais" onclick="setMenuTab('acais')">Açaís</button>
@@ -241,12 +242,7 @@
                 <!-- Tab content: Flavors Grid -->
                 <div id="menuTabFlavors" class="menu-tab-content">
                     <div class="flavors-search-bar" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
-                        <input type="text" id="searchFlavor" placeholder="Pesquisar sabor pelo nome..." oninput="filterFlavorsList()" style="flex: 1; min-width: 200px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
-                        <select id="filterCategory" onchange="filterFlavorsList()" style="padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); cursor: pointer;">
-                            <option value="todos">Todos os Sabores</option>
-                            <option value="salgadas">Salgadas</option>
-                            <option value="doces">Doces</option>
-                        </select>
+                        <input type="text" id="searchFlavor" placeholder="Pesquisar sabor salgado pelo nome..." oninput="filterFlavorsList()" style="flex: 1; min-width: 200px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
                     </div>
                     
                     <div class="flavors-list-grid" id="flavorsListGrid">
@@ -254,10 +250,21 @@
                     </div>
                 </div>
 
+                <!-- Tab content: Sweet Flavors Grid -->
+                <div id="menuTabSweetPizzas" class="menu-tab-content display-none">
+                    <div class="flavors-search-bar" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+                        <input type="text" id="searchSweetFlavor" placeholder="Pesquisar sabor doce pelo nome..." oninput="filterSweetFlavorsList()" style="flex: 1; min-width: 200px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
+                    </div>
+                    
+                    <div class="flavors-list-grid" id="sweetFlavorsListGrid">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
                 <!-- Tab content: Calzones Grid -->
                 <div id="menuTabCalzones" class="menu-tab-content display-none">
                     <div class="flavors-search-bar" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
-                        <input type="text" id="searchCalzone" placeholder="Pesquisar pizza doce pelo nome..." oninput="filterCalzonesList()" style="flex: 1; min-width: 200px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
+                        <input type="text" id="searchCalzone" placeholder="Pesquisar calzone pelo nome..." oninput="filterCalzonesList()" style="flex: 1; min-width: 200px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
                     </div>
                     <div class="flavors-list-grid" id="calzonesListGrid">
                         <!-- Loaded dynamically -->
