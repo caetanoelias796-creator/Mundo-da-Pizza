@@ -492,6 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupNavigationTabs();
     setupSubcategoryTabs();
     loadCartFromLocalStorage();
+    loadClientInfoFromLocalStorage();
     initGSAPAnimations();
     initDragToScroll();
 });
@@ -2240,6 +2241,14 @@ function submitOrder() {
         total: total
     };
 
+    // Save client info to localStorage for future orders
+    saveClientInfoToLocalStorage({
+        clientName: orderData.clientName,
+        clientPhone: orderData.clientPhone,
+        checkoutType: orderData.checkoutType,
+        address: orderData.address
+    });
+
     if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
         const orderId = Date.now();
         const timeFormatted = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -2724,3 +2733,55 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+/* ==========================================================================
+   PWA Client Info Auto-Save & Auto-Fill
+   ========================================================================== */
+function saveClientInfoToLocalStorage(info) {
+    try {
+        const existingData = localStorage.getItem('pwa_client_info');
+        let finalInfo = { ...info };
+        if (existingData) {
+            const existing = JSON.parse(existingData);
+            // If the current order is pickup, preserve the previously saved address
+            if (info.checkoutType === 'pickup' && existing.address) {
+                finalInfo.address = existing.address;
+            }
+        }
+        localStorage.setItem('pwa_client_info', JSON.stringify(finalInfo));
+    } catch (e) {
+        console.error("Error saving client info to localStorage:", e);
+    }
+}
+
+function loadClientInfoFromLocalStorage() {
+    try {
+        const data = localStorage.getItem('pwa_client_info');
+        if (!data) return;
+        const info = JSON.parse(data);
+        
+        const clientNameEl = document.getElementById('clientName');
+        const clientPhoneEl = document.getElementById('clientPhone');
+        
+        if (clientNameEl && info.clientName) clientNameEl.value = info.clientName;
+        if (clientPhoneEl && info.clientPhone) clientPhoneEl.value = info.clientPhone;
+        
+        if (info.address) {
+            const streetEl = document.getElementById('addressStreet');
+            const numberEl = document.getElementById('addressNumber');
+            const neighborhoodEl = document.getElementById('addressBairro');
+            const refEl = document.getElementById('addressRef');
+            
+            if (streetEl && info.address.street) streetEl.value = info.address.street;
+            if (numberEl && info.address.number) numberEl.value = info.address.number;
+            if (neighborhoodEl && info.address.neighborhood) {
+                neighborhoodEl.value = info.address.neighborhood;
+                // Recalculate checkout details since neighborhood changed
+                updateCheckoutPrice();
+            }
+            if (refEl && info.address.reference) refEl.value = info.address.reference;
+        }
+    } catch (e) {
+        console.error("Error loading client info from localStorage:", e);
+    }
+}
