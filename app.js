@@ -472,6 +472,13 @@ let PIZZA_TYPES = [];
    Initialization / DOM Loading
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
+    // Register Service Worker for PWA fullscreen/offline support
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+            .catch(err => console.warn('Service Worker registration failed:', err));
+    }
+
     populateNeighborhoodDropdown();
     updateContactInfoUI();
     
@@ -1538,7 +1545,7 @@ function updateVisualPizza() {
                 divider.style.top = '0';
                 divider.style.width = '2px';
                 divider.style.height = '100%';
-                divider.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                divider.style.backgroundColor = 'rgba(229, 57, 53, 0.4)';
                 divider.style.boxShadow = '0 0 8px var(--primary)';
                 divider.style.transform = 'translateX(-50%)';
                 divider.style.zIndex = '3';
@@ -1552,7 +1559,7 @@ function updateVisualPizza() {
                 d1.style.top = '0';
                 d1.style.width = '2px';
                 d1.style.height = '50%';
-                d1.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                d1.style.backgroundColor = 'rgba(229, 57, 53, 0.4)';
                 d1.style.boxShadow = '0 0 8px var(--primary)';
                 d1.style.transform = 'translateX(-50%)';
                 d1.style.zIndex = '3';
@@ -1566,7 +1573,7 @@ function updateVisualPizza() {
                 d2.style.top = '50%';
                 d2.style.width = '2px';
                 d2.style.height = '50%';
-                d2.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                d2.style.backgroundColor = 'rgba(229, 57, 53, 0.4)';
                 d2.style.boxShadow = '0 0 8px var(--primary)';
                 d2.style.transformOrigin = 'top center';
                 d2.style.transform = 'translateX(-50%) rotate(120deg)';
@@ -1581,7 +1588,7 @@ function updateVisualPizza() {
                 d3.style.top = '50%';
                 d3.style.width = '2px';
                 d3.style.height = '50%';
-                d3.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                d3.style.backgroundColor = 'rgba(229, 57, 53, 0.4)';
                 d3.style.boxShadow = '0 0 8px var(--primary)';
                 d3.style.transformOrigin = 'top center';
                 d3.style.transform = 'translateX(-50%) rotate(240deg)';
@@ -1596,7 +1603,7 @@ function updateVisualPizza() {
                 dh.style.top = '50%';
                 dh.style.width = '100%';
                 dh.style.height = '2px';
-                dh.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                dh.style.backgroundColor = 'rgba(229, 57, 53, 0.4)';
                 dh.style.boxShadow = '0 0 8px var(--primary)';
                 dh.style.transform = 'translateY(-50%)';
                 dh.style.zIndex = '3';
@@ -1610,7 +1617,7 @@ function updateVisualPizza() {
                 dv.style.top = '0';
                 dv.style.width = '2px';
                 dv.style.height = '100%';
-                dv.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                dv.style.backgroundColor = 'rgba(229, 57, 53, 0.4)';
                 dv.style.boxShadow = '0 0 8px var(--primary)';
                 dv.style.transform = 'translateX(-50%)';
                 dv.style.zIndex = '3';
