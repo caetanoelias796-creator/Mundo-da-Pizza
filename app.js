@@ -2646,3 +2646,81 @@ function initDragToScroll() {
         });
     });
 }
+
+/* ==========================================================================
+   PWA Custom Install Prompt Logic
+   ========================================================================== */
+let deferredPrompt = null;
+
+// Catch the browser's install prompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the default mini-infobar prompt
+    e.preventDefault();
+    // Save the event so we can trigger it later
+    deferredPrompt = e;
+    
+    // Check if the user has already dismissed this prompt recently
+    const dismissed = localStorage.getItem('pwa_prompt_dismissed') === 'true';
+    if (!dismissed) {
+        showPwaInstallBanner();
+    }
+});
+
+// Helper to show the PWA banner
+function showPwaInstallBanner() {
+    const installBanner = document.getElementById('pwaInstallBanner');
+    if (installBanner) {
+        // Double check it's not already installed
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        if (!isStandalone) {
+            installBanner.classList.remove('hidden');
+        }
+    }
+}
+
+// Register click events for custom banner
+document.addEventListener('DOMContentLoaded', () => {
+    const installBanner = document.getElementById('pwaInstallBanner');
+    const installBtn = document.getElementById('btnPwaInstall');
+    const closeBtn = document.getElementById('btnPwaClose');
+    
+    if (!installBanner) return;
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    const dismissed = localStorage.getItem('pwa_prompt_dismissed') === 'true';
+
+    // Handle iOS layout specifically
+    if (isIOS && !isStandalone && !dismissed) {
+        const bannerText = installBanner.querySelector('.pwa-banner-text span');
+        if (bannerText) {
+            bannerText.innerHTML = 'Toque em compartilhar (ícone <span style="font-size: 16px;">⎋</span>) e depois em "Adicionar à Tela de Início"';
+        }
+        if (installBtn) {
+            installBtn.style.display = 'none'; // Hide install button for iOS
+        }
+        // iOS Safari doesn't support beforeinstallprompt, so we display it immediately for iOS users if not standalone
+        setTimeout(showPwaInstallBanner, 1500);
+    }
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            // Show the native prompt
+            deferredPrompt.prompt();
+            // Wait for user choice
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`PWA Install Choice: ${outcome}`);
+            deferredPrompt = null;
+            installBanner.classList.add('hidden');
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            installBanner.classList.add('hidden');
+            // Save dismissal to localStorage so it doesn't bother the user again
+            localStorage.setItem('pwa_prompt_dismissed', 'true');
+        });
+    }
+});
