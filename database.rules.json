@@ -1,0 +1,24 @@
+{
+  "rules": {
+    "menu": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "menu_items": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "orders": {
+      ".read": "auth != null",
+      ".write": true
+    },
+    "status": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "backups": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
