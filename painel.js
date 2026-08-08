@@ -36,7 +36,13 @@ function checkAuthentication() {
                 sessionStorage.setItem('painel_authenticated', 'true');
                 if (loginOverlay) loginOverlay.style.display = 'none';
                 if (dashboardWrapper) dashboardWrapper.style.display = 'grid';
-                startApp();
+                
+                if (!appStarted) {
+                    startApp();
+                } else {
+                    // Re-attach realtime listeners with authenticated auth socket
+                    setupFirebaseRealtime();
+                }
             } else {
                 console.log("🔒 Nenhum usuário autenticado no Firebase Auth. Aguardando login...");
                 sessionStorage.removeItem('painel_authenticated');
