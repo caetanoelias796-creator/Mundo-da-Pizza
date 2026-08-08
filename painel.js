@@ -1,7 +1,7 @@
 /* ==========================================================================
    Firebase Initialization
    ========================================================================== */
-if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined' && firebaseConfig.apiKey !== 'SUA_API_KEY') {
+if (typeof firebase !== 'undefined' && typeof firebaseConfig !== 'undefined' && firebaseConfig.apiKey !== 'SUA_API_KEY' && firebase.apps.length === 0) {
     firebase.initializeApp(firebaseConfig);
 }
 
@@ -28,20 +28,20 @@ function checkAuthentication() {
     if (typeof firebase !== 'undefined' && firebase.auth) {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
+                console.log("✅ Firebase Auth verificado com sucesso!");
+                console.log("• User UID:", user.uid);
+                console.log("• User Email:", user.email);
+                console.log("• Database URL:", firebase.app().options?.databaseURL);
+                
                 sessionStorage.setItem('painel_authenticated', 'true');
                 if (loginOverlay) loginOverlay.style.display = 'none';
                 if (dashboardWrapper) dashboardWrapper.style.display = 'grid';
                 startApp();
             } else {
-                const isSessionAuth = sessionStorage.getItem('painel_authenticated') === 'true';
-                if (isSessionAuth) {
-                    if (loginOverlay) loginOverlay.style.display = 'none';
-                    if (dashboardWrapper) dashboardWrapper.style.display = 'grid';
-                    startApp();
-                } else {
-                    if (loginOverlay) loginOverlay.style.display = 'flex';
-                    if (dashboardWrapper) dashboardWrapper.style.display = 'none';
-                }
+                console.log("🔒 Nenhum usuário autenticado no Firebase Auth. Aguardando login...");
+                sessionStorage.removeItem('painel_authenticated');
+                if (loginOverlay) loginOverlay.style.display = 'flex';
+                if (dashboardWrapper) dashboardWrapper.style.display = 'none';
             }
         });
     } else {
@@ -95,12 +95,12 @@ function handleLoginSubmit(event) {
         .then((userCredential) => {
             hideLoading();
             const user = userCredential.user;
+            console.log("✅ Login efetuado com sucesso!");
+            console.log("• currentUser.uid:", user ? user.uid : 'N/A');
+            console.log("• currentUser.email:", user ? user.email : 'N/A');
+            
             sessionStorage.setItem('painel_authenticated', 'true');
-            if (user && user.uid) {
-                sessionStorage.setItem('painel_uid', user.uid);
-            }
             if (errorDiv) errorDiv.classList.add('display-none');
-            checkAuthentication();
             showToast('Acesso autorizado ao painel!', 'success');
         })
         .catch((err) => {
