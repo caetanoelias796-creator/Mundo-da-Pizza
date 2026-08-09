@@ -2252,7 +2252,7 @@ function saveSimpleItem(event) {
         if (oldCategory !== newCategory) {
             const oldList = oldCategory === 'bebidas' ? menuData.menu_items.bebidas : menuData.menu_items.sobremesas;
             const itemIndex = oldList.findIndex(i => i.id === idField);
-            let itemData = { id: idField, name, description, price, image, available: true };
+            let itemData = { id: idField, name, description, category: newCategory, price, image, available: true };
             if (itemIndex !== -1) {
                 itemData.available = oldList[itemIndex].available !== false;
                 oldList.splice(itemIndex, 1);
@@ -2266,6 +2266,7 @@ function saveSimpleItem(event) {
             if (index !== -1) {
                 list[index].name = name;
                 list[index].description = description;
+                list[index].category = newCategory;
                 list[index].price = price;
                 list[index].image = image;
             }
@@ -2283,6 +2284,7 @@ function saveSimpleItem(event) {
             id: id,
             name: name,
             description: description,
+            category: newCategory,
             price: price,
             image: image,
             available: true

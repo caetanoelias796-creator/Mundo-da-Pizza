@@ -754,14 +754,14 @@ function renderMenu() {
     const bebidas = MENU_ITEMS.bebidas || [];
     bebidas.forEach(item => {
         if (searchVal && !item.name.toLowerCase().includes(searchVal) && !(item.description || '').toLowerCase().includes(searchVal)) return;
-        if (bebidasGrid) bebidasGrid.appendChild(createFlavorCard(item));
+        if (bebidasGrid) bebidasGrid.appendChild(createFlavorCard(item, 'bebidas'));
     });
     
     // Render Sobremesas
     const sobremesas = MENU_ITEMS.sobremesas || [];
     sobremesas.forEach(item => {
         if (searchVal && !item.name.toLowerCase().includes(searchVal) && !(item.description || '').toLowerCase().includes(searchVal)) return;
-        if (sobremesasGrid) sobremesasGrid.appendChild(createFlavorCard(item));
+        if (sobremesasGrid) sobremesasGrid.appendChild(createFlavorCard(item, 'sobremesas'));
     });
     
     // Toggle empty states for sections
@@ -859,7 +859,7 @@ function toggleSectionVisibility(sectionId, gridElement) {
     }
 }
 
-function createFlavorCard(item) {
+function createFlavorCard(item, defaultCategory = 'bebidas') {
     const card = document.createElement('div');
     card.className = 'item-card';
     if (item.available === false) {
@@ -867,6 +867,7 @@ function createFlavorCard(item) {
     }
     
     const badgeHTML = item.badge ? `<span class="item-card-badge">${item.badge}</span>` : '';
+    const itemCategory = item.category || defaultCategory;
     
     let priceHTML = '';
     let actionButtonHTML = '';
@@ -884,12 +885,13 @@ function createFlavorCard(item) {
             </button>
         `;
     } else {
+        const itemPrice = typeof item.price === 'number' ? item.price : (parseFloat(item.price) || 0);
         priceHTML = `
             <span class="from-text">Valor</span>
-            <span class="price-value">R$ ${item.price.toFixed(2).replace('.', ',')}</span>
+            <span class="price-value">R$ ${itemPrice.toFixed(2).replace('.', ',')}</span>
         `;
         actionButtonHTML = `
-            <button class="btn-add" onclick="addSimpleItemToCart('${item.id}', '${item.category}')" title="Adicionar ao carrinho" ${item.available === false ? 'disabled' : ''}>
+            <button class="btn-add" onclick="addSimpleItemToCart('${item.id}', '${itemCategory}')" title="Adicionar ao carrinho" ${item.available === false ? 'disabled' : ''}>
                 <span class="material-symbols-rounded">add_shopping_cart</span>
             </button>
         `;
@@ -1263,30 +1265,57 @@ function addSimpleItemToCart(itemId, category) {
         return;
     }
 
-    const rawList = category === 'bebidas' ? MENU_ITEMS.bebidas : (MENU_ITEMS.sobremesas || []);
-    const list = Array.isArray(rawList) ? rawList : Object.values(rawList || {});
-    const itemData = list.find(item => item && item.id === itemId);
-    
+    const rawBebidas = MENU_ITEMS.bebidas || [];
+    const bebidasList = Array.isArray(rawBebidas) ? rawBebidas : Object.values(rawBebidas);
+
+    const rawSobremesas = MENU_ITEMS.sobremesas || [];
+    const sobremesasList = Array.isArray(rawSobremesas) ? rawSobremesas : Object.values(rawSobremesas);
+
+    let itemData = null;
+    let effectiveCategory = category;
+
+    if (category === 'bebidas') {
+        itemData = bebidasList.find(item => item && item.id === itemId);
+    } else if (category === 'sobremesas') {
+        itemData = sobremesasList.find(item => item && item.id === itemId);
+    }
+
+    // Fallback if category was undefined or item was saved without category property
+    if (!itemData) {
+        itemData = bebidasList.find(item => item && item.id === itemId);
+        if (itemData) {
+            effectiveCategory = 'bebidas';
+        } else {
+            itemData = sobremesasList.find(item => item && item.id === itemId);
+            if (itemData) {
+                effectiveCategory = 'sobremesas';
+            }
+        }
+    }
+
     if (!itemData) return;
-    
+
+    const itemPrice = typeof itemData.price === 'number' ? itemData.price : (parseFloat(itemData.price) || 0);
+
     // Check if item already exists in cart to increment qty
     const existingIndex = cart.findIndex(cItem => cItem.type === 'simple' && cItem.id === itemId);
-    
+
     if (existingIndex > -1) {
         cart[existingIndex].quantity += 1;
-        cart[existingIndex].totalPrice = cart[existingIndex].quantity * cart[existingIndex].singlePrice;
+        cart[existingIndex].singlePrice = itemPrice;
+        cart[existingIndex].totalPrice = cart[existingIndex].quantity * itemPrice;
     } else {
         cart.push({
             type: 'simple',
             id: itemId,
             name: itemData.name,
-            category: category,
+            category: effectiveCategory || 'bebidas',
             quantity: 1,
-            singlePrice: itemData.price,
-            totalPrice: itemData.price
+            singlePrice: itemPrice,
+            totalPrice: itemPrice
         });
     }
-    
+
     saveCartToLocalStorage();
     updateCartUI();
     toggleCart(true);
