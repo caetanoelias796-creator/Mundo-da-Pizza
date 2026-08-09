@@ -150,7 +150,13 @@ function handleLogout(event) {
 }
 
 function setupFirebaseRealtime() {
+    if (typeof firebase === 'undefined' || firebase.apps.length === 0) return;
+    
     const ordersRef = firebase.database().ref('orders');
+    
+    // Detach previous listeners to prevent duplicate triggers
+    ordersRef.off();
+    
     ordersRef.on('value', (snapshot) => {
         const data = snapshot.val();
         let ordersArray = [];
@@ -197,7 +203,10 @@ function setupFirebaseRealtime() {
             serverStatus.innerHTML = '<span class="dot" style="background-color: #81c784;"></span> Firebase Cloud';
         }
     }, (error) => {
-        console.error("Firebase read error:", error);
+        console.error("Erro na escuta dos pedidos no Realtime Database (/orders):", error);
+        if (error.code === 'PERMISSION_DENIED') {
+            console.warn("Aviso: Conexão temporária negada. O listener será re-anexado após validação de auth.");
+        }
     });
 }
 

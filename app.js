@@ -1615,6 +1615,24 @@ function submitOrder() {
         total: total
     };
 
+    showLoading('Enviando pedido ao servidor...');
+
+    function finalizeOrderSuccess() {
+        hideLoading();
+        cart = [];
+        saveCartToLocalStorage();
+        updateCartUI();
+        closeCheckoutModal();
+        window.open(whatsappLink, '_blank');
+        alert('Pedido enviado com sucesso! Você será redirecionado para o WhatsApp para confirmar.');
+    }
+
+    function handleOrderError(err) {
+        hideLoading();
+        console.error("Erro ao enviar pedido para o servidor:", err);
+        showToast('Não foi possível enviar o pedido para o servidor. Verifique sua conexão e tente novamente.', 'error', 6000);
+    }
+
     if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
         const orderId = Date.now();
         const timeFormatted = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -1630,27 +1648,29 @@ function submitOrder() {
         };
 
         firebase.database().ref('orders/' + orderId).set(firebaseOrder)
-        .catch(err => console.error("Erro ao enviar para o Firebase:", err));
+        .then(() => {
+            finalizeOrderSuccess();
+        })
+        .catch(err => {
+            handleOrderError(err);
+        });
     } else {
         fetch('/api/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
         })
-        .catch(err => console.error("Erro ao enviar pedido para o painel local:", err));
+        .then(res => {
+            if (!res.ok) throw new Error("Erro na gravação do pedido local");
+            return res.json();
+        })
+        .then(() => {
+            finalizeOrderSuccess();
+        })
+        .catch(err => {
+            handleOrderError(err);
+        });
     }
-
-    // Clear cart and close modals
-    cart = [];
-    saveCartToLocalStorage();
-    updateCartUI();
-    closeCheckoutModal();
-    
-    // Open WhatsApp link in new tab
-    window.open(whatsappLink, '_blank');
-    
-    // Show success dialog
-    alert('Pedido enviado com sucesso! Você será redirecionado para o WhatsApp para confirmar.');
 }
 
 /* ==========================================================================
