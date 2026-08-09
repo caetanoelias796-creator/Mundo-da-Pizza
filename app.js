@@ -1258,8 +1258,14 @@ function addPizzaToOrder() {
    Add Simple Items (Drinks & Desserts)
    ========================================================================== */
 function addSimpleItemToCart(itemId, category) {
-    const list = category === 'bebidas' ? MENU_ITEMS.bebidas : (MENU_ITEMS.sobremesas || []);
-    const itemData = list.find(item => item.id === itemId);
+    if (typeof isShopOpen !== 'undefined' && !isShopOpen) {
+        showToast('A pizzaria está fechada no momento.', 'warning');
+        return;
+    }
+
+    const rawList = category === 'bebidas' ? MENU_ITEMS.bebidas : (MENU_ITEMS.sobremesas || []);
+    const list = Array.isArray(rawList) ? rawList : Object.values(rawList || {});
+    const itemData = list.find(item => item && item.id === itemId);
     
     if (!itemData) return;
     
@@ -1284,6 +1290,7 @@ function addSimpleItemToCart(itemId, category) {
     saveCartToLocalStorage();
     updateCartUI();
     toggleCart(true);
+    showToast(`${itemData.name} adicionado ao carrinho!`, 'success');
 }
 
 /* ==========================================================================
@@ -1690,7 +1697,18 @@ function initMenuData() {
             const data = snapshot.val();
             if (data) {
                 if (data.promo_config) PROMO_CONFIG = data.promo_config;
-                if (data.menu_items) MENU_ITEMS = data.menu_items;
+                if (data.menu_items) {
+                    MENU_ITEMS = data.menu_items;
+                    if (MENU_ITEMS.pizzas && !Array.isArray(MENU_ITEMS.pizzas)) {
+                        MENU_ITEMS.pizzas = Object.values(MENU_ITEMS.pizzas);
+                    }
+                    if (MENU_ITEMS.bebidas && !Array.isArray(MENU_ITEMS.bebidas)) {
+                        MENU_ITEMS.bebidas = Object.values(MENU_ITEMS.bebidas);
+                    }
+                    if (MENU_ITEMS.sobremesas && !Array.isArray(MENU_ITEMS.sobremesas)) {
+                        MENU_ITEMS.sobremesas = Object.values(MENU_ITEMS.sobremesas);
+                    }
+                }
                 if (data.pizza_prices) {
                     Object.keys(data.pizza_prices).forEach(sizeKey => {
                         if (!PIZZA_PRICES[sizeKey]) {
