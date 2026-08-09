@@ -1,9 +1,9 @@
-const CACHE_NAME = 'mundo-da-pizza-v1.0.6';
+const CACHE_NAME = 'mundo-da-pizza-v1.0.7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './painel.html',
-  './index.css?v=2',
+  './index.css?v=3',
   './painel.css?v=2',
   './app.js?v=5',
   './painel.js?v=5',
