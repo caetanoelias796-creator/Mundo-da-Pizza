@@ -1016,13 +1016,13 @@ function openPizzaCustomizer(preSelectedSizeId = 'broto', preSelectedFlavorId = 
     onSizeChange(); // Trigger calculations
     
     modal.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Lock background scroll
+    updateBodyModalState();
 }
 
 function closePizzaCustomizer() {
     const modal = document.getElementById('customizerModal');
     modal.classList.remove('active');
-    document.body.style.overflow = ''; // Unlock scroll
+    updateBodyModalState();
 }
 
 function renderCustomizerFlavors() {
@@ -1336,6 +1336,7 @@ function toggleCart(isOpen) {
         drawer.classList.remove('active');
         overlay.classList.remove('active');
     }
+    updateBodyModalState();
 }
 
 function updateCartQty(index, delta) {
@@ -1477,13 +1478,13 @@ function openCheckoutModal() {
     document.getElementById('checkoutTotalValue').innerText = `R$ ${total.toFixed(2)}`;
     
     modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    updateBodyModalState();
 }
 
 function closeCheckoutModal() {
     const modal = document.getElementById('checkoutModal');
     modal.classList.remove('active');
-    document.body.style.overflow = '';
+    updateBodyModalState();
 }
 
 function setCheckoutType(type) {
@@ -1938,7 +1939,7 @@ function openPromoModal(force = false) {
     const modal = document.getElementById('promoModal');
     if (modal) {
         modal.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Lock scrolling
+        updateBodyModalState();
     }
 }
 
@@ -1973,7 +1974,7 @@ function closePromoModal() {
     const modal = document.getElementById('promoModal');
     if (modal) {
         modal.classList.remove('active');
-        document.body.style.overflow = ''; // Unlock scrolling
+        updateBodyModalState();
     }
     
     // Save to localStorage if checked
@@ -2105,4 +2106,16 @@ function escapeHtml(str) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+
+function updateBodyModalState() {
+    const hasActiveModal = document.querySelector('.modal-overlay.active, .cart-drawer-overlay.active, .promo-modal-overlay.active');
+    if (hasActiveModal) {
+        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+    }
+}
+
 
