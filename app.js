@@ -733,7 +733,7 @@ function renderMenu() {
             const matchedFlavor = (MENU_ITEMS.pizzas || []).find(pizza => {
                 return pizza.name.toLowerCase() === searchVal;
             }) || (MENU_ITEMS.pizzas || []).find(pizza => {
-                return pizza.name.toLowerCase().includes(searchVal) || pizza.description.toLowerCase().includes(searchVal);
+                return pizza.name.toLowerCase().includes(searchVal) || (pizza.description || '').toLowerCase().includes(searchVal);
             });
             
             if (matchedFlavor) {
@@ -753,14 +753,14 @@ function renderMenu() {
     // Render Bebidas
     const bebidas = MENU_ITEMS.bebidas || [];
     bebidas.forEach(item => {
-        if (searchVal && !item.name.toLowerCase().includes(searchVal) && !item.description.toLowerCase().includes(searchVal)) return;
+        if (searchVal && !item.name.toLowerCase().includes(searchVal) && !(item.description || '').toLowerCase().includes(searchVal)) return;
         if (bebidasGrid) bebidasGrid.appendChild(createFlavorCard(item));
     });
     
     // Render Sobremesas
     const sobremesas = MENU_ITEMS.sobremesas || [];
     sobremesas.forEach(item => {
-        if (searchVal && !item.name.toLowerCase().includes(searchVal) && !item.description.toLowerCase().includes(searchVal)) return;
+        if (searchVal && !item.name.toLowerCase().includes(searchVal) && !(item.description || '').toLowerCase().includes(searchVal)) return;
         if (sobremesasGrid) sobremesasGrid.appendChild(createFlavorCard(item));
     });
     
@@ -904,7 +904,7 @@ function createFlavorCard(item) {
         </div>
         <div class="item-card-content">
             <h3 class="item-card-title">${item.name}</h3>
-            <p class="item-card-desc">${item.description}</p>
+            <p class="item-card-desc">${item.description || ''}</p>
             <div class="item-card-footer">
                 <div class="item-card-price">
                     ${priceHTML}
@@ -1042,7 +1042,7 @@ function renderCustomizerFlavors() {
             <input type="checkbox" name="pizza-flavor" value="${pizza.id}" class="flavor-checkbox" onchange="onFlavorCheckChange(this)">
             <div class="flavor-item-info">
                 <span class="flavor-name">${pizza.name}</span>
-                <span class="flavor-desc">${pizza.description}</span>
+                <span class="flavor-desc">${pizza.description || ''}</span>
             </div>
             <div class="flavor-item-category-badge ${pizza.categoryType}">${categoryLabel}</div>
         `;
