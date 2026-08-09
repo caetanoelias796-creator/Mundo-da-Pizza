@@ -38,16 +38,20 @@
                 <span class="material-symbols-rounded">lock</span>
             </div>
             <h2>Acesso Restrito</h2>
-            <p>Insira a senha de administrador (admin@mundodapizza.com)</p>
+            <p>Autenticação do Painel Administrativo</p>
             <form id="loginForm" onsubmit="handleLoginSubmit(event)">
                 <div class="form-group" style="margin-bottom: 15px; position: relative;">
-                    <input type="password" id="loginPassword" placeholder="Digite a senha..." required autocomplete="current-password">
+                    <input type="email" id="loginEmail" value="admin@mundodapizza.com" placeholder="E-mail de acesso" required autocomplete="username">
+                    <span class="material-symbols-rounded password-icon">mail</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px; position: relative;">
+                    <input type="password" id="loginPassword" placeholder="Senha do Firebase Auth..." required autocomplete="current-password">
                     <span class="material-symbols-rounded password-icon">key</span>
                 </div>
                 <button type="submit" class="btn-login">Entrar no Painel</button>
             </form>
             <div id="loginError" class="login-error display-none">
-                <span class="material-symbols-rounded">error</span> Senha incorreta!
+                <span class="material-symbols-rounded">error</span> E-mail ou senha incorretos!
             </div>
         </div>
     </div>
@@ -712,6 +716,6 @@
     <script src="firebase-config.js"></script>
 
     <!-- Script File -->
-    <script src="painel.js?v=3"></script>
+    <script src="painel.js?v=4"></script>
 </body>
 </html>

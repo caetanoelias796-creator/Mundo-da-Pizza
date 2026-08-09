@@ -86,22 +86,23 @@ function startApp() {
 
 function handleLoginSubmit(event) {
     event.preventDefault();
+    const emailInput = document.getElementById('loginEmail');
     const passwordInput = document.getElementById('loginPassword');
     const errorDiv = document.getElementById('loginError');
+    
+    const email = emailInput ? emailInput.value.trim() : 'admin@mundodapizza.com';
     const inputPass = passwordInput ? passwordInput.value.trim() : '';
     
-    if (!inputPass) return;
+    if (!email || !inputPass) return;
     
-    showLoading('Verificando acesso...');
-    
-    const email = 'admin@mundodapizza.com';
+    showLoading('Verificando acesso no Firebase Auth...');
     
     if (typeof firebase !== 'undefined' && firebase.auth) {
         firebase.auth().signInWithEmailAndPassword(email, inputPass)
         .then((userCredential) => {
             hideLoading();
             const user = userCredential.user;
-            console.log("✅ Login efetuado com sucesso!");
+            console.log("✅ Firebase Auth: Login efetuado com sucesso!");
             console.log("• currentUser.uid:", user ? user.uid : 'N/A');
             console.log("• currentUser.email:", user ? user.email : 'N/A');
             
@@ -115,7 +116,7 @@ function handleLoginSubmit(event) {
             if (errorDiv) errorDiv.classList.remove('display-none');
             passwordInput.value = '';
             passwordInput.focus();
-            showToast('Senha incorreta ou acesso não autorizado!', 'error');
+            showToast('E-mail ou senha incorretos!', 'error');
         });
     } else {
         hideLoading();
