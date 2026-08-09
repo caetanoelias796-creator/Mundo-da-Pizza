@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mundo-da-pizza-v1.0.1';
+const CACHE_NAME = 'mundo-da-pizza-v1.0.2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -6,7 +6,7 @@ const ASSETS_TO_CACHE = [
   './index.css?v=2',
   './painel.css?v=2',
   './app.js?v=2',
-  './painel.js?v=2',
+  './painel.js?v=3',
   './firebase-config.js',
   './menu.json',
   './manifest.json',
