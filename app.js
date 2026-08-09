@@ -828,7 +828,7 @@ function createSizeCard(sizeId, matchedFlavorId = null) {
     
     card.innerHTML = `
         <div class="item-card-image-wrapper">
-            <img src="${image}" alt="${name}" loading="lazy">
+            <img src="${image}" alt="${name}" loading="lazy" onerror="this.onerror=null; this.src='assets/pizza_hero.png';">
             ${badgeHTML}
         </div>
         <div class="item-card-content">
@@ -895,9 +895,11 @@ function createFlavorCard(item) {
         `;
     }
     
+    const fallbackImg = (item.category === 'bebidas' || item.category === 'sobremesas') ? 'assets/gourmet_bebida.png' : 'assets/pizza_hero.png';
+    
     card.innerHTML = `
         <div class="item-card-image-wrapper">
-            <img src="${item.image}" alt="${item.name}" loading="lazy">
+            <img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.onerror=null; this.src='${fallbackImg}';">
             ${badgeHTML}
         </div>
         <div class="item-card-content">
