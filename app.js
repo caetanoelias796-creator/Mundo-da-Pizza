@@ -1163,7 +1163,7 @@ function calculateCustomizerPrice() {
     if (currentPizza.selectedFlavors.length === 0) {
         // Enforce R$ 0 if no flavor selected
         document.getElementById('btnAddToOrder').disabled = true;
-        document.getElementById('btnAddToOrder').innerText = 'Escolha pelo menos 1 sabor';
+        document.getElementById('btnAddToOrder').innerHTML = `<span class="material-symbols-rounded">touch_app</span> Escolha pelo menos 1 sabor`;
         return;
     }
     
@@ -1218,7 +1218,8 @@ function calculateCustomizerPrice() {
     const singlePrice = maxFlavorPrice + borderPrice;
     currentPizza.totalPrice = singlePrice * currentPizza.quantity;
     
-    document.getElementById('btnAddToOrder').innerText = `Adicionar ao Pedido — R$ ${currentPizza.totalPrice.toFixed(2)}`;
+    const priceFormatted = currentPizza.totalPrice.toFixed(2).replace('.', ',');
+    document.getElementById('btnAddToOrder').innerHTML = `<span class="material-symbols-rounded">add_shopping_cart</span> Adicionar ao Pedido — R$ ${priceFormatted}`;
 }
 
 function addPizzaToOrder() {
