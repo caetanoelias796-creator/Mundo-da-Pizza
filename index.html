@@ -348,11 +348,11 @@
                         <div class="form-row">
                             <div class="form-group flex-2">
                                 <label for="clientName">Seu Nome *</label>
-                                <input type="text" id="clientName" required placeholder="Ex: Elias Caetano">
+                                <input type="text" id="clientName" required autocomplete="name" placeholder="Ex: Elias Caetano">
                             </div>
                             <div class="form-group flex-1">
                                 <label for="clientPhone">WhatsApp *</label>
-                                <input type="tel" id="clientPhone" required placeholder="Ex: (51) 99999-9999">
+                                <input type="tel" id="clientPhone" required autocomplete="tel" inputmode="tel" placeholder="Ex: (51) 99999-9999">
                             </div>
                         </div>
                     </div>
@@ -362,12 +362,12 @@
                         <h4>Endereço de Entrega</h4>
                         <div class="form-group">
                             <label for="addressStreet">Rua / Avenida *</label>
-                            <input type="text" id="addressStreet" required placeholder="Ex: Rua Vicente da Fontoura">
+                            <input type="text" id="addressStreet" required autocomplete="street-address" placeholder="Ex: Rua Vicente da Fontoura">
                         </div>
                         <div class="form-row">
                             <div class="form-group flex-1">
                                 <label for="addressNumber">Número *</label>
-                                <input type="text" id="addressNumber" required placeholder="Ex: 1320">
+                                <input type="text" id="addressNumber" required inputmode="numeric" placeholder="Ex: 1320">
                             </div>
                             <div class="form-group flex-2">
                                 <label for="addressBairro">Bairro *</label>
@@ -411,7 +411,7 @@
                         
                         <div id="cashChangeGroup" class="form-group mt-16 display-none">
                             <label for="cashChange">Precisa de troco para quanto?</label>
-                            <input type="text" id="cashChange" placeholder="Ex: R$ 100,00">
+                            <input type="text" id="cashChange" inputmode="decimal" placeholder="Ex: R$ 100,00">
                         </div>
                         
                         <div id="pixInstructions" class="pix-info-box mt-16">
