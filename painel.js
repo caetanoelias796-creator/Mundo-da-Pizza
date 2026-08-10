@@ -33,6 +33,11 @@ function checkAuthentication() {
                 console.log("• User Email:", user.email);
                 console.log("• Database URL:", firebase.app().options?.databaseURL);
                 
+                const AUTHORIZED_UIDS = ['Vp5EtNWyHRdu9SD8iLM86yuipvb2'];
+                if (AUTHORIZED_UIDS.includes(user.uid)) {
+                    console.log("🔑 Usuário Administrador Autorizado (UID):", user.uid);
+                }
+                
                 sessionStorage.setItem('painel_authenticated', 'true');
                 if (loginOverlay) loginOverlay.style.display = 'none';
                 if (dashboardWrapper) dashboardWrapper.style.display = 'grid';
@@ -665,10 +670,13 @@ function confirmClearAllOrders() {
 }
 
 function clearAllOrders() {
+    showLoading('Zerando pedidos no servidor...');
+    
     if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
         // Clear from Firebase Realtime Database
         firebase.database().ref('orders').remove()
         .then(() => {
+            hideLoading();
             alert("Sucesso: Todos os pedidos foram apagados no Firebase!");
             orders = [];
             knownOrderIds.clear();
@@ -677,8 +685,35 @@ function clearAllOrders() {
             triggerCentralAutoBackup();
         })
         .catch(err => {
-            alert("Erro ao zerar pedidos no Firebase.");
-            console.error(err);
+            console.warn("Remoção direta ref('orders') falhou, tentando exclusão por nós individuais...", err);
+            
+            // Fallback: Delete each order node individually if root delete was restricted
+            if (orders.length === 0) {
+                hideLoading();
+                alert("Nenhum pedido para apagar.");
+                return;
+            }
+            
+            const promises = orders.map(o => {
+                const key = o.firebaseKey || o.id;
+                return firebase.database().ref(`orders/${key}`).remove();
+            });
+            
+            Promise.all(promises)
+            .then(() => {
+                hideLoading();
+                alert("Sucesso: Todos os pedidos foram apagados!");
+                orders = [];
+                knownOrderIds.clear();
+                updateIndicators();
+                renderOrdersList();
+                triggerCentralAutoBackup();
+            })
+            .catch(fallbackErr => {
+                hideLoading();
+                alert("Erro ao zerar pedidos no Firebase. Verifique suas permissões.");
+                console.error("Erro no fallback de exclusão de pedidos:", fallbackErr);
+            });
         });
     } else {
         // Clear from Local Express API
@@ -691,6 +726,7 @@ function clearAllOrders() {
             return res.json();
         })
         .then(data => {
+            hideLoading();
             alert("Sucesso: Todos os pedidos locais foram apagados!");
             orders = [];
             knownOrderIds.clear();
@@ -699,6 +735,7 @@ function clearAllOrders() {
             triggerCentralAutoBackup();
         })
         .catch(err => {
+            hideLoading();
             alert("Erro ao zerar pedidos locais.");
             console.error(err);
         });

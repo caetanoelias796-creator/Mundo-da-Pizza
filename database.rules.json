@@ -9,6 +9,8 @@
       ".write": "auth != null"
     },
     "orders": {
+      ".read": "auth != null",
+      ".write": "auth != null",
       "$orderId": {
         ".read": "auth != null",
         ".write": "!data.exists() || auth != null"
