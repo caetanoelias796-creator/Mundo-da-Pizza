@@ -1426,3 +1426,78 @@ input:checked + .slider:before {
     border-color: var(--primary);
 }
 
+/* ==========================================================================
+   Motoboy Navigation Buttons & Quick Actions
+   ========================================================================== */
+.motoboy-quick-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.btn-motoboy-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(33, 150, 243, 0.12);
+    color: #42a5f5;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+    border-radius: var(--radius-sm, 6px);
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-motoboy-link:hover {
+    background: #2196f3;
+    color: #ffffff;
+    border-color: #2196f3;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.35);
+}
+
+.btn-motoboy-link-share {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(156, 39, 176, 0.12);
+    color: #ab47bc;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+    border-radius: var(--radius-sm, 6px);
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-motoboy-link-share:hover {
+    background: #ab47bc;
+    color: #ffffff;
+    border-color: #ab47bc;
+}
+
+.btn-motoboy {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 10px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    background-color: rgba(33, 150, 243, 0.15) !important;
+    color: #42a5f5 !important;
+    border: 1px solid rgba(33, 150, 243, 0.3) !important;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-motoboy:hover {
+    background-color: #2196f3 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+

@@ -465,7 +465,20 @@ function renderOrdersList() {
                 </div>
                 <div class="customer-row" style="align-items: flex-start;">
                     <span class="label">Endereço:</span>
-                    <span class="value" style="font-size: 13px;">${addressHTML}</span>
+                    <div style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
+                        <span class="value" style="font-size: 13px;">${addressHTML}</span>
+                        ${order.checkoutType === 'delivery' && order.address ? `
+                            <div class="motoboy-quick-actions">
+                                <button type="button" class="btn-motoboy-link" onclick="sendToMotoboy('${order.id}')" title="Abrir localização no Google Maps">
+                                    <span class="material-symbols-rounded" style="font-size: 16px;">two_wheeler</span>
+                                    <span>Enviar p/ Motoboy</span>
+                                </button>
+                                <button type="button" class="btn-motoboy-link-share" onclick="shareAddressToMotoboy('${order.id}')" title="Compartilhar Endereço">
+                                    <span class="material-symbols-rounded" style="font-size: 16px;">share</span>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
                 </div>
                 <div class="customer-row">
                     <span class="label">Pagamento:</span>
@@ -488,6 +501,12 @@ function renderOrdersList() {
                 
                 <div class="footer-actions">
                     ${cancelButtonHTML}
+                    ${order.checkoutType === 'delivery' && order.address ? `
+                        <button class="btn-motoboy" onclick="sendToMotoboy('${order.id}')" title="Enviar para Motoboy (Google Maps)">
+                            <span class="material-symbols-rounded">two_wheeler</span>
+                            <span>Motoboy</span>
+                        </button>
+                    ` : ''}
                     <button class="btn-print" onclick="printOrderTicket(${order.id})" title="Imprimir Cupom Completo">
                         <span class="material-symbols-rounded">print</span>
                     </button>
@@ -505,6 +524,69 @@ function renderOrdersList() {
     // Update reports in real-time when orders list is updated
     if (typeof renderReportsDashboard === 'function') {
         renderReportsDashboard();
+    }
+}
+
+/* ==========================================================================
+   Motoboy Navigation & Location Helper Functions
+   ========================================================================== */
+function buildMotoboyAddressQuery(order) {
+    if (!order || order.checkoutType !== 'delivery' || !order.address) return '';
+    const addr = order.address;
+    
+    const parts = [];
+    if (addr.street) parts.push(addr.street);
+    if (addr.number) parts.push(`nº ${addr.number}`);
+    if (addr.neighborhood) parts.push(`Bairro ${addr.neighborhood}`);
+    
+    const city = addr.city || 'Nova Petrópolis';
+    const state = addr.state || 'RS';
+    parts.push(`${city}, ${state}`);
+    
+    return parts.join(', ');
+}
+
+function buildGoogleMapsUrl(order) {
+    const addressStr = buildMotoboyAddressQuery(order);
+    if (!addressStr) return '';
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressStr)}`;
+}
+
+function sendToMotoboy(orderId) {
+    const order = orders.find(o => String(o.id) === String(orderId));
+    if (!order || order.checkoutType !== 'delivery' || !order.address) {
+        alert('Este pedido não possui endereço de entrega.');
+        return;
+    }
+    
+    const mapsUrl = buildGoogleMapsUrl(order);
+    if (!mapsUrl) {
+        alert('Não foi possível gerar a localização para este endereço.');
+        return;
+    }
+    
+    window.open(mapsUrl, '_blank');
+}
+
+function shareAddressToMotoboy(orderId) {
+    const order = orders.find(o => String(o.id) === String(orderId));
+    if (!order || order.checkoutType !== 'delivery' || !order.address) {
+        alert('Este pedido não possui endereço de entrega.');
+        return;
+    }
+    
+    const addressStr = buildMotoboyAddressQuery(order);
+    const mapsUrl = buildGoogleMapsUrl(order);
+    const shareText = `🚴 *Entrega Mundo da Pizza*\n📍 *DESTINO:* ${addressStr}\n\n🗺️ *Abrir no Google Maps:*\n${mapsUrl}`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Entrega Mundo da Pizza',
+            text: shareText
+        }).catch(() => {});
+    } else {
+        const whatsappShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+        window.open(whatsappShareUrl, '_blank');
     }
 }
 
