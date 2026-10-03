@@ -1,4 +1,5 @@
-backup_original/
-mundo_da_pizza_atualizado.zip
+﻿*.zip
+*.log
+_backup_*
 node_modules/
 .DS_Store

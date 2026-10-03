@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 80" fill="none">
+  <!--
+    JC Informática — Monograma Oficial
+    ====================================
+    J (esquerda): diagonal grossa de cima-direita → baixo-esquerda + hook em checkmark na base
+    C (direita):  barra diagonal no topo ~45°, spine esquerda vertical, base horizontal, abertura à direita
+    
+    Grid de construção: célula = 8px
+    Stroke thickness ≈ 14px
+    
+    Versão 1: Azul sólido (#0037FF) — para uso em fundos claros e escuros
+    Versão 2: Branco + acentos azuis — para header escuro
+  -->
+
+  <!-- ==================== LETRA J ==================== -->
+  <!--
+    Construção do J:
+    - Tira diagonal principal: de (8,0) a (30,40) — vai de cima-esq p/ baixo-dir
+    - Depois vira para direita em hook: de (30,40) a (46,56)
+    - Depois sobe levemente: hook termina em ponta
+    - Corte diagonal no topo (parallelogram)
+    Resultado: shape como uma seta/chevron inclinado com hook
+  -->
+
+  <!-- J — Azul Cósmico -->
+  <polygon
+    points="
+      6,14
+      20,0
+      34,0
+      34,8
+      26,8
+      42,30
+      42,56
+      34,64
+      18,64
+      8,54
+      8,46
+      16,46
+      20,52
+      28,52
+      32,44
+      32,24
+      16,2
+      6,14
+    "
+    fill="#0037FF"
+  />
+
+  <!-- ==================== LETRA C ==================== -->
+  <!--
+    Construção do C:
+    - Topo: barra diagonal de (56,0) → (96,0) com corte em (104,10) → (104,20)
+    - Lado direito: aberto (gap da letra C)
+    - Spine esquerda: vertical de (48,10) → (48,62)
+    - Base: horizontal de (48,62) → (96,62) com corte em (104,52)
+    - Conecta de volta
+  -->
+
+  <!-- C — Azul Cósmico -->
+  <polygon
+    points="
+      48,10
+      56,0
+      96,0
+      104,10
+      104,22
+      96,22
+      90,14
+      60,14
+      60,48
+      90,48
+      96,42
+      104,42
+      104,54
+      96,64
+      56,64
+      48,54
+    "
+    fill="#0037FF"
+  />
+</svg>

@@ -1,87 +1,253 @@
-const CACHE_NAME = 'mundo-da-pizza-v1.0.8';
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './painel.html',
-  './index.css?v=4',
-  './painel.css?v=2',
-  './app.js?v=5',
-  './painel.js?v=5',
-  './firebase-config.js',
-  './menu.json',
-  './manifest.json',
-  './assets/logo.png',
-  './assets/pizza_hero.png',
-  './assets/pizza_banner.png',
-  './assets/icon-192.png',
-  './assets/icon-512.png'
+/* ==========================================================================
+   Service Worker - JC Food PWA
+   Versão Centralizada: jc-food-v1.0.1
+   ========================================================================== */
+
+const CACHE_NAME = 'jc-food-v1.0.1';
+const CACHE_PREFIX = 'jc-food-';
+
+// Lista de ativos estáticos essenciais para funcionamento offline
+const STATIC_ASSETS = [
+    './',
+    './index.html',
+    './branding-theme.css',
+    './index.css',
+    './PizzaEngine.js',
+    './TenantContext.js',
+    './CustomerAuth.js',
+    './ThemeManager.js',
+    './app.js',
+    './firebase-config.js',
+    './TrackingService.js',
+    './manifest.json',
+    './assets/logo.png',
+    './assets/simbolo_branco.png',
+    './assets/hero_banner.jpg',
+    './assets/pizza_hero.png',
+    './assets/pizza_banner.png',
+    './assets/icon-192.png',
+    './assets/icon-512.png',
+    './assets/coca_cola.png',
+    './assets/guarana.png',
+    './assets/agua.png',
+    './assets/bebidas/coca_2l.jpg',
+    './assets/bebidas/coca_600.jpg',
+    './assets/bebidas/coca_350.jpg',
+    './assets/bebidas/coca_zero_350.jpg',
+    './assets/bebidas/coca_zero_600.jpg',
+    './assets/bebidas/guarana_2l.jpg',
+    './assets/bebidas/guarana_600.jpg',
+    './assets/bebidas/guarana_350.jpg',
+    './assets/bebidas/agua_sem_gas_500.jpg',
+    './assets/bebidas/energetico_elev_2l.jpg',
+    './assets/bebidas/vinho.jpg',
+    './assets/calzones/calzone_artesanal.jpg',
+    './assets/burgers/burguer_tradicional.jpg',
+    './assets/burgers/x_frango.jpg',
+    './pwa/config.js',
+    './pwa/cacheManager.js',
+    './pwa/updateManager.js',
+    './pwa/installManager.js',
+    './pwa/splashScreen.js',
+    './pwa/pwa-init.js'
 ];
 
-// Install Event
+/* --------------------------------------------------------------------------
+   1. INSTALL EVENT
+   Pré-cacheia os ativos essenciais.
+   O Service Worker permanece no estado 'waiting' para que o usuário seja
+   notificado pelo UpdateManager via popup antes de aplicar a nova versão.
+   -------------------------------------------------------------------------- */
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch(err => {
-        console.warn('Non-critical cache pre-load warning:', err);
-      });
-    })
-  );
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(async (cache) => {
+            await Promise.allSettled(
+                STATIC_ASSETS.map((url) => {
+                    return cache.add(new Request(url, { cache: 'reload' })).catch((err) => {
+                        console.warn('[SW] Aviso no pré-cacheamento:', url, err);
+                    });
+                })
+            );
+        })
+    );
+    // NÃO executar self.skipWaiting() aqui para permitir controle do usuário via popup
 });
 
-// Activate Event
+/* --------------------------------------------------------------------------
+   2. ACTIVATE EVENT
+   Limpa automaticamente todos os caches antigos do sistema e assume o controle.
+   -------------------------------------------------------------------------- */
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (cacheName !== CACHE_NAME) {
+                        console.log('[SW] Removendo cache antigo:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        }).then(() => {
+            console.log('[SW] Novo Service Worker ativo e controlando clientes:', CACHE_NAME);
+            return self.clients.claim();
         })
-      );
-    }).then(() => self.clients.claim())
-  );
+    );
 });
 
-// Message Listener for SW skipWaiting
+/* --------------------------------------------------------------------------
+   3. MESSAGE EVENT
+   Recebe comando SKIP_WAITING enviado pelo updateManager.js ou painel.js
+   -------------------------------------------------------------------------- */
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.action === 'skipWaiting') {
-    self.skipWaiting();
-  }
+    if (!event.data) return;
+
+    if (
+        event.data.type === 'SKIP_WAITING' ||
+        event.data.action === 'skipWaiting' ||
+        event.data === 'SKIP_WAITING'
+    ) {
+        console.log('[SW] Comando SKIP_WAITING recebido. Ativando novo Service Worker imediatamente...');
+        self.skipWaiting();
+    }
 });
 
-// Fetch Event: Stale-While-Revalidate for local assets, Network-First for API/Firebase
+/* --------------------------------------------------------------------------
+   4. FETCH EVENT
+   Estratégias segmentadas por tipo de recurso.
+   -------------------------------------------------------------------------- */
 self.addEventListener('fetch', (event) => {
-  const requestUrl = new URL(event.request.url);
+    // Apenas requisições GET com esquema HTTP/HTTPS são tratadas pelo Service Worker
+    if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
 
-  // Skip non-GET requests or Firebase / API calls
-  if (
-    event.request.method !== 'GET' ||
-    requestUrl.pathname.includes('/api/') ||
-    requestUrl.hostname.includes('firebase') ||
-    requestUrl.hostname.includes('googleapis') ||
-    requestUrl.protocol === 'chrome-extension:'
-  ) {
-    return;
-  }
+    const requestUrl = new URL(event.request.url);
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          return cachedResponse;
-        });
+    // 4.1. FIREBASE, PAINEL ADMINISTRATIVO & APIS DINÂMICAS: NETWORK ONLY (Bypass total do cache)
+    if (
+        requestUrl.pathname.startsWith('/painel') ||
+        requestUrl.pathname.startsWith('/garcom') ||
+        requestUrl.hostname.includes('firebaseio.com') ||
+        requestUrl.hostname.includes('googleapis.com') ||
+        requestUrl.hostname.includes('gstatic.com') ||
+        requestUrl.hostname.includes('facebook.net') ||
+        requestUrl.hostname.includes('googletagmanager.com') ||
+        requestUrl.hostname.includes('google-analytics.com') ||
+        requestUrl.pathname.startsWith('/api/')
+    ) {
+        return; // Requisição direta para a rede
+    }
 
-      return cachedResponse || fetchPromise;
-    })
-  );
+    // 4.2. PÁGINAS HTML / NAVEGAÇÃO: NETWORK FIRST
+    // Garante que o usuário receba sempre o HTML mais atualizado quando online
+    if (
+        event.request.mode === 'navigate' ||
+        (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) ||
+        requestUrl.pathname.endsWith('.html') ||
+        requestUrl.pathname.endsWith('/')
+    ) {
+        event.respondWith(
+            fetch(event.request, { cache: 'no-cache' })
+                .then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, responseClone);
+                        });
+                    }
+                    return networkResponse;
+                })
+                .catch(() => {
+                    return caches.match(event.request).then((cached) => {
+                        return cached || caches.match('./index.html') || caches.match('./');
+                    });
+                })
+        );
+        return;
+    }
+
+    // 4.3. ARQUIVOS DE DADOS / CARDÁPIO LOCAL: NETWORK FIRST
+    if (
+        requestUrl.pathname.endsWith('menu.json') ||
+        requestUrl.pathname.endsWith('configuracoes.json')
+    ) {
+        event.respondWith(
+            fetch(event.request, { cache: 'no-cache' })
+                .then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, responseClone);
+                        });
+                    }
+                    return networkResponse;
+                })
+                .catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
+    // 4.4. SCRIPTS JAVASCRIPT E ESTILOS CSS: STALE-WHILE-REVALIDATE
+    // Carrega do cache instantaneamente e atualiza em background na rede
+    if (
+        requestUrl.pathname.endsWith('.js') ||
+        requestUrl.pathname.endsWith('.css')
+    ) {
+        event.respondWith(
+            caches.open(CACHE_NAME).then(async (cache) => {
+                const cachedResponse = await cache.match(event.request);
+                const fetchPromise = fetch(event.request)
+                    .then((networkResponse) => {
+                        if (networkResponse && networkResponse.status === 200) {
+                            cache.put(event.request, networkResponse.clone());
+                        }
+                        return networkResponse;
+                    })
+                    .catch(() => cachedResponse);
+
+                return cachedResponse || fetchPromise;
+            })
+        );
+        return;
+    }
+
+    // 4.5. IMAGENS E FONTES ESTÁTICAS: CACHE FIRST
+    // Economiza banda e acelera o carregamento
+    if (
+        requestUrl.pathname.startsWith('/assets/') ||
+        requestUrl.pathname.includes('/assets/') ||
+        /\.(png|jpg|jpeg|svg|webp|ico|woff2?)$/i.test(requestUrl.pathname)
+    ) {
+        event.respondWith(
+            caches.match(event.request).then((cachedResponse) => {
+                if (cachedResponse) {
+                    return cachedResponse;
+                }
+                return fetch(event.request).then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, responseClone);
+                        });
+                    }
+                    return networkResponse;
+                });
+            })
+        );
+        return;
+    }
+
+    // 4.6. DEMAIS RECURSOS ESTÁTICOS: NETWORK FIRST COM FALLBACK PARA CACHE
+    event.respondWith(
+        fetch(event.request)
+            .then((networkResponse) => {
+                if (networkResponse && networkResponse.status === 200) {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseClone);
+                    });
+                }
+                return networkResponse;
+            })
+            .catch(() => caches.match(event.request))
+    );
 });

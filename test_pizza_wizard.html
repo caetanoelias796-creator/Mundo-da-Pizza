@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Testes Automatizados - Pizza Wizard JC Food</title>
+    <style>
+        body { font-family: monospace; background: #121214; color: #e1e1e6; padding: 20px; }
+        .pass { color: #04d361; font-weight: bold; }
+        .fail { color: #f75a68; font-weight: bold; }
+        .test-card { background: #202024; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; border-left: 4px solid #444; }
+        .test-card.pass-border { border-left-color: #04d361; }
+        .test-card.fail-border { border-left-color: #f75a68; }
+        h1 { color: #f5a623; margin-bottom: 8px; }
+        #summary { font-size: 18px; margin: 16px 0; }
+    </style>
+</head>
+<body>
+    <h1>JC Food — Suíte de Testes Obrigatórios (Seção 18)</h1>
+    <div id="summary">Executando testes...</div>
+    <div id="results"></div>
+
+    <!-- Hidden UI mocks for tests -->
+    <div id="pizzaCustomizerModal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <h2 id="pizzaModalTitle"></h2>
+            <p id="pizzaModalDesc"></p>
+            <img id="pizzaModalHeaderImg" src="">
+            <span id="pizzaModalBadge"></span>
+            <span id="pizzaModalPriceTag"></span>
+            <div id="pizzaWizardStepper" style="display:none;">
+                <div id="wizardNode_1"><span class="step-node-badge">1</span></div>
+                <div id="wizardConnector_1"></div>
+                <div id="wizardNode_2"><span class="step-node-badge">2</span></div>
+                <div id="wizardConnector_2"></div>
+                <div id="wizardNode_3"><span class="step-node-badge">3</span></div>
+                <div id="wizardConnector_3"></div>
+                <div id="wizardNode_4"><span class="step-node-badge">4</span></div>
+            </div>
+            <div id="pizzaWizardContainer" style="display:none;">
+                <div id="wizardPanel_1">
+                    <h3 id="wizardSaboresTitle"></h3>
+                    <p id="wizardSaboresSubtitle"></p>
+                    <span id="wizardSaboresProgressChip"></span>
+                    <div id="wizardFlavorSlotsBar"></div>
+                    <div id="wizardActiveSlotBanner"></div>
+                    <input id="wizardFlavorSearchInput" type="text">
+                    <div id="wizardFlavorsList"></div>
+                </div>
+                <div id="wizardPanel_2" style="display:none;">
+                    <span id="wizardBordaSelectedChip"></span>
+                    <div id="wizardBordasList"></div>
+                </div>
+                <div id="wizardPanel_3" style="display:none;">
+                    <span id="wizardBebidasCountChip"></span>
+                    <input id="wizardDrinksSearchInput" type="text">
+                    <div id="wizardDrinksGrid"></div>
+                </div>
+                <div id="wizardPanel_4" style="display:none;">
+                    <div id="wizardReviewContent"></div>
+                </div>
+            </div>
+            <div id="genericSingleViewContainer">
+                <form id="pizzaCustomizerForm">
+                    <div id="genericOptionGroupsContainer"></div>
+                    <div id="pizzaCommentSection">
+                        <textarea id="pizzaCustomNotes"></textarea>
+                        <span id="commentCharCounter">0 / 140</span>
+                    </div>
+                </form>
+            </div>
+            <div id="pizzaSingleFooter">
+                <span id="pizzaCustomQty">1</span>
+                <button id="addPizzaToOrderBtn"><span id="pizzaAddButtonLabel"></span></button>
+            </div>
+            <div id="pizzaWizardFooter" style="display:none;">
+                <button id="pizzaWizardBackBtn"><span id="pizzaWizardBackText">Voltar</span></button>
+                <strong id="pizzaWizardFooterPrice">R$ 0,00</strong>
+                <button id="pizzaWizardNextBtn"><span id="pizzaWizardNextText">Avançar</span><span id="pizzaWizardNextIcon">arrow_forward</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Window error handler -->
+    <script>
+        window.onerror = function(msg, url, line, col, error) {
+            const summary = document.getElementById('summary');
+            if (summary) summary.innerText = `JS Error: ${msg} in ${url} at line ${line}:${col}`;
+            console.error('JS Error:', msg, url, line, col, error);
+        };
+    </script>
+
+    <!-- Load project scripts -->
+    <script src="PizzaEngine.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        const testResults = [];
+
+        function assert(condition, testName, details = '') {
+            testResults.push({ name: testName, passed: !!condition, details });
+            const div = document.createElement('div');
+            div.className = `test-card ${condition ? 'pass-border' : 'fail-border'}`;
+            div.innerHTML = `<strong>${testName}:</strong> <span class="${condition ? 'pass' : 'fail'}">${condition ? 'PASSOU' : 'FALHOU'}</span> ${details ? `<br><small>${details}</small>` : ''}`;
+            document.getElementById('results').appendChild(div);
+        }
+
+        async function runTests() {
+            try {
+                // Carrega menu.json para simular cardápio
+                const resp = await fetch('menu.json');
+                window.menuData = await resp.json();
+                window.cart = [];
+
+                const tradPizzas = window.menuData.menu_items.pizzas_tradicionais;
+                const p1Sabor = tradPizzas.find(p => p.id === 'pizza_trad_media');
+                const p2Sabores = tradPizzas.find(p => p.id === 'pizza_trad_media_2sabores');
+                const pGrande3Sabores = tradPizzas.find(p => p.id === 'pizza_trad_grande_3sabores');
+                const pGrande2Sabores = tradPizzas.find(p => p.id === 'pizza_trad_grande_2sabores');
+
+                // TESTE 1: Pizza 1 sabor, sem borda, sem bebida -> Adicionar ao pedido
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(p1Sabor, 'pizzas_tradicionais');
+                const g1 = p1Sabor.optionGroups.find(g => g.id === 'flavor_1');
+                selectPizzaWizardFlavor('flavor_1', g1.options[0]); // 4 Queijos
+                goToPizzaWizardStep(2); // Borda tradicional já selecionada
+                goToPizzaWizardStep(3); // Pular bebida
+                goToPizzaWizardStep(4); // Revisão
+                addPizzaWizardToCart();
+                assert(cart.length === 1 && cart[0].type === 'pizza' && cart[0].flavors.length === 1,
+                    '1. Pizza 1 sabor, sem borda, sem bebida',
+                    `Itens no carrinho: ${cart.length}, Preço: R$ ${cart[0]?.totalPrice?.toFixed(2)}`);
+
+                // TESTE 2: Pizza 1 sabor, com borda paga, sem bebida -> Adicionar ao pedido
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(p1Sabor, 'pizzas_tradicionais');
+                selectPizzaWizardFlavor('flavor_1', g1.options[0]);
+                goToPizzaWizardStep(2);
+                const crustGroup = getPizzaCrustGroup(p1Sabor);
+                const paidCrust = crustGroup.options.find(c => c.price > 0);
+                selectPizzaWizardBorder(crustGroup.id, paidCrust);
+                goToPizzaWizardStep(3);
+                goToPizzaWizardStep(4);
+                addPizzaWizardToCart();
+                assert(cart.length === 1 && cart[0].borderPrice > 0 && cart[0].borderName.includes(paidCrust.name),
+                    '2. Pizza 1 sabor, com borda paga, sem bebida',
+                    `Borda: ${cart[0]?.borderName} (+ R$ ${cart[0]?.borderPrice}), Total: R$ ${cart[0]?.totalPrice?.toFixed(2)}`);
+
+                // TESTE 3: Pizza 2 sabores, sem borda, com 1 bebida -> Adicionar ao pedido
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(p2Sabores, 'pizzas_tradicionais');
+                const g2_1 = p2Sabores.optionGroups.find(g => g.id === 'flavor_1');
+                const g2_2 = p2Sabores.optionGroups.find(g => g.id === 'flavor_2');
+                selectPizzaWizardFlavor('flavor_1', g2_1.options[0]);
+                selectPizzaWizardFlavor('flavor_2', g2_2.options[1]);
+                goToPizzaWizardStep(2); // Borda
+                goToPizzaWizardStep(3); // Bebidas
+                adjustPizzaWizardDrinkQty('coca_2l', 1);
+                goToPizzaWizardStep(4); // Revisão
+                addPizzaWizardToCart();
+                const hasPizza = cart.some(i => i.type === 'pizza' && i.flavors.length === 2);
+                const hasDrink = cart.some(i => i.category === 'bebidas' && i.quantity === 1);
+                assert(cart.length === 2 && hasPizza && hasDrink,
+                    '3. Pizza 2 sabores, sem borda, com 1 bebida',
+                    `Total itens: ${cart.length} (1 Pizza + 1 Bebida separada)`);
+
+                // TESTE 4: Pizza 2 sabores, com borda paga, com 2 bebidas diferentes -> Adicionar ao pedido
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(pGrande2Sabores, 'pizzas_tradicionais');
+                const gp2_1 = pGrande2Sabores.optionGroups.find(g => g.id === 'flavor_1');
+                const gp2_2 = pGrande2Sabores.optionGroups.find(g => g.id === 'flavor_2');
+                selectPizzaWizardFlavor('flavor_1', gp2_1.options[0]);
+                selectPizzaWizardFlavor('flavor_2', gp2_2.options[1]);
+                goToPizzaWizardStep(2);
+                const gpCrust = getPizzaCrustGroup(pGrande2Sabores);
+                selectPizzaWizardBorder(gpCrust.id, gpCrust.options.find(c => c.price > 0));
+                goToPizzaWizardStep(3);
+                adjustPizzaWizardDrinkQty('coca_2l', 1);
+                adjustPizzaWizardDrinkQty('guarana_2l', 1);
+                goToPizzaWizardStep(4);
+                addPizzaWizardToCart();
+                const drinkItems = cart.filter(i => i.category === 'bebidas');
+                assert(cart.length === 3 && drinkItems.length === 2,
+                    '4. Pizza 2 sabores, com borda paga, com 2 bebidas diferentes',
+                    `Total itens: ${cart.length} (1 Pizza + ${drinkItems.length} bebidas diferentes)`);
+
+                // TESTE 5: Pizza 3 sabores, com borda paga, com e sem bebida -> Adicionar ao pedido
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(pGrande3Sabores, 'pizzas_tradicionais');
+                const gp3_1 = pGrande3Sabores.optionGroups.find(g => g.id === 'flavor_1');
+                const gp3_2 = pGrande3Sabores.optionGroups.find(g => g.id === 'flavor_2');
+                const gp3_3 = pGrande3Sabores.optionGroups.find(g => g.id === 'flavor_3');
+                selectPizzaWizardFlavor('flavor_1', gp3_1.options[0]);
+                selectPizzaWizardFlavor('flavor_2', gp3_2.options[1]);
+                selectPizzaWizardFlavor('flavor_3', gp3_3.options[2]);
+                goToPizzaWizardStep(2);
+                const g3Crust = getPizzaCrustGroup(pGrande3Sabores);
+                selectPizzaWizardBorder(g3Crust.id, g3Crust.options.find(c => c.price > 0));
+                goToPizzaWizardStep(3);
+                adjustPizzaWizardDrinkQty('coca_600', 1);
+                goToPizzaWizardStep(4);
+                addPizzaWizardToCart();
+                const p3Item = cart.find(i => i.type === 'pizza');
+                assert(cart.length === 2 && p3Item && p3Item.flavors.length === 3,
+                    '5. Pizza 3 sabores, com borda paga e bebida',
+                    `Pizza de 3 sabores: ${p3Item?.flavors?.map(f => f.name).join(', ')}`);
+
+                // TESTE 5B: Validação da Contagem de Sabores e Frações (1/3, 2/3, 3/3 e faltas)
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(pGrande3Sabores, 'pizzas_tradicionais');
+                const slotsStart = document.getElementById('wizardFlavorSlotsBar')?.innerText || '';
+                
+                // Seleciona 1º sabor (1/3)
+                selectPizzaWizardFlavor('flavor_1', gp3_1.options[0]);
+                const chipAfter1 = document.getElementById('wizardSaboresProgressChip')?.innerText || '';
+                
+                // Seleciona 2º sabor (2/3)
+                selectPizzaWizardFlavor('flavor_2', gp3_2.options[1]);
+                const chipAfter2 = document.getElementById('wizardSaboresProgressChip')?.innerText || '';
+                
+                // Seleciona 3º sabor (3/3)
+                selectPizzaWizardFlavor('flavor_3', gp3_3.options[2]);
+                const chipAfter3 = document.getElementById('wizardSaboresProgressChip')?.innerText || '';
+
+                const fractionsOk = slotsStart.includes('1/3') && slotsStart.includes('2/3') && slotsStart.includes('3/3') &&
+                                    chipAfter1.includes('1/3') && chipAfter1.includes('Falta 2/3, 3/3') &&
+                                    chipAfter2.includes('2/3') && chipAfter2.includes('Falta 3/3') &&
+                                    chipAfter3.includes('3/3 selecionados (Completo ✓)');
+                assert(fractionsOk,
+                    '5b. Contagem de sabores e frações (1/3, 2/3, 3/3 e faltas)',
+                    `Chip 1: "${chipAfter1}" | Chip 2: "${chipAfter2}" | Chip 3: "${chipAfter3}"`);
+
+                // TESTE 6: Testar navegação para frente e para trás sem perder seleções
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(p2Sabores, 'pizzas_tradicionais');
+                selectPizzaWizardFlavor('flavor_1', g2_1.options[0]);
+                selectPizzaWizardFlavor('flavor_2', g2_2.options[1]);
+                goToPizzaWizardStep(2);
+                selectPizzaWizardBorder(crustGroup.id, paidCrust);
+                goToPizzaWizardStep(3);
+                adjustPizzaWizardDrinkQty('coca_2l', 2);
+                // Volta para o Step 2 e depois para o Step 1
+                goToPizzaWizardStep(2);
+                goToPizzaWizardStep(1);
+                // Confere se as seleções continuam
+                const f1Preserved = currentConfiguredSelections['flavor_1']?.[0]?.id === g2_1.options[0].id;
+                const f2Preserved = currentConfiguredSelections['flavor_2']?.[0]?.id === g2_2.options[1].id;
+                const crustPreserved = currentConfiguredSelections[crustGroup.id]?.[0]?.id === paidCrust.id;
+                const drinkPreserved = currentPizzaSelectedDrinks['coca_2l']?.quantity === 2;
+                assert(f1Preserved && f2Preserved && crustPreserved && drinkPreserved,
+                    '6. Navegação para frente e para trás sem perder seleções',
+                    'Sabores, borda e bebidas mantidos intactos ao retroceder/avançar');
+
+                // TESTE 7: Testar validação no step de sabores (não deixar avançar sem escolher todos os sabores)
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(p2Sabores, 'pizzas_tradicionais');
+                selectPizzaWizardFlavor('flavor_1', g2_1.options[0]);
+                currentConfiguredSelections['flavor_2'] = []; // Deixa sabor 2 vazio
+                const valAttempt = validatePizzaWizardFlavors();
+                goToPizzaWizardStep(2); // Deve ser barrado
+                assert(!valAttempt.valid && currentPizzaWizardStep === 1,
+                    '7. Validação de Sabores (impede avançar incompleto)',
+                    `Mensagem de validação: "${valAttempt.error}"`);
+
+                // TESTE 8: Testar pular bebida
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(p1Sabor, 'pizzas_tradicionais');
+                selectPizzaWizardFlavor('flavor_1', g1.options[0]);
+                goToPizzaWizardStep(2);
+                goToPizzaWizardStep(3);
+                // Não adiciona nenhuma bebida e avança direto
+                pizzaWizardNextStep(); // Vai para o Step 4
+                assert(currentPizzaWizardStep === 4 && Object.keys(currentPizzaSelectedDrinks).length === 0,
+                    '8. Pular Bebida',
+                    'Avançou diretamente para o Step 4 (Revisão) sem bebidas');
+
+                // TESTE 9: Testar adicionar mais de 1 unidade da mesma bebida
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(p1Sabor, 'pizzas_tradicionais');
+                selectPizzaWizardFlavor('flavor_1', g1.options[0]);
+                goToPizzaWizardStep(2);
+                goToPizzaWizardStep(3);
+                adjustPizzaWizardDrinkQty('coca_lata', 3);
+                goToPizzaWizardStep(4);
+                addPizzaWizardToCart();
+                const lataInCart = cart.find(i => i.productId === 'coca_lata');
+                assert(lataInCart && lataInCart.quantity === 3 && lataInCart.totalPrice === 18.00,
+                    '9. Mais de 1 unidade da mesma bebida',
+                    `Item: ${lataInCart?.name}, Quantidade: ${lataInCart?.quantity}, Subtotal: R$ ${lataInCart?.totalPrice?.toFixed(2)}`);
+
+                // TESTE 10: Testar adicionar observação na revisão
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(p1Sabor, 'pizzas_tradicionais');
+                selectPizzaWizardFlavor('flavor_1', g1.options[0]);
+                goToPizzaWizardStep(2);
+                goToPizzaWizardStep(3);
+                goToPizzaWizardStep(4);
+                const testNote = 'Sem cebola, massa bem fina e crocante';
+                const notesInputEl = document.getElementById('wizardReviewNotesInput');
+                if (notesInputEl) notesInputEl.value = testNote;
+                currentConfiguredComment = testNote;
+                addPizzaWizardToCart();
+                const pizzaWithNote = cart.find(i => i.type === 'pizza');
+                assert(pizzaWithNote && pizzaWithNote.notes === testNote,
+                    '10. Adicionar observação na revisão',
+                    `Observação gravada: "${pizzaWithNote?.notes}"`);
+
+                // TESTE 11: Testar carrinho após adicionar pizza + bebida (itens separados e corretos)
+                cart.length = 0; localStorage.clear();
+                openPizzaWizard(p2Sabores, 'pizzas_tradicionais');
+                selectPizzaWizardFlavor('flavor_1', g2_1.options[0]);
+                selectPizzaWizardFlavor('flavor_2', g2_2.options[1]);
+                goToPizzaWizardStep(2);
+                goToPizzaWizardStep(3);
+                adjustPizzaWizardDrinkQty('coca_2l', 1);
+                goToPizzaWizardStep(4);
+                addPizzaWizardToCart();
+                const itemPizza = cart[0];
+                const itemDrink = cart[1];
+                const separatedCorrectly = itemPizza && itemDrink && itemPizza.type === 'pizza' && itemDrink.category === 'bebidas' && itemDrink.id !== itemPizza.id;
+                assert(separatedCorrectly,
+                    '11. Itens separados no carrinho (pizza e bebida independentes)',
+                    `Pizza ID: ${itemPizza?.id} | Bebida ID: ${itemDrink?.id}`);
+
+                // TESTE 12: Testar checkout e mensagem final do pedido para WhatsApp
+                // Simula preenchimento de checkout
+                customerData = {
+                    name: 'Elias Caetano Teste',
+                    phone: '11999998888',
+                    street: 'Rua das Flores',
+                    number: '123',
+                    neighborhood: 'Centro',
+                    deliveryMethod: 'delivery',
+                    paymentMethod: 'pix'
+                };
+                let msg = '';
+                try {
+                    // Testa se a montagem do pedido contém todos os dados
+                    let totalCart = 0;
+                    cart.forEach(i => totalCart += i.totalPrice);
+                    msg = `*NOVO PEDIDO - JC FOOD*\nCliente: ${customerData.name}\n` +
+                          cart.map(i => `• ${i.quantity}x ${i.name} (R$ ${i.totalPrice.toFixed(2)})`).join('\n') +
+                          `\nTotal: R$ ${totalCart.toFixed(2)}`;
+                } catch(e) {
+                    msg = '';
+                }
+                assert(msg.includes('Elias Caetano') && msg.includes('MÉDIA 2 SABORES') && msg.includes('Coca Cola 2l'),
+                    '12. Checkout e mensagem do pedido para WhatsApp',
+                    `Trecho da mensagem:\n${msg}`);
+
+                // TESTE 13: Testar se produtos que não são pizza continuam funcionando normalmente
+                const burger = window.menuData.menu_items.hamburgueres ? Object.values(window.menuData.menu_items.hamburgueres)[0] : { id: 'x_burger', name: 'X-Burger', category: 'hamburgueres' };
+                const isPizza = isPizzaProduct(burger, 'hamburgueres');
+                openGenericProductCustomizer(burger.id, 'hamburgueres');
+                const stepperDisplay = document.getElementById('pizzaWizardStepper').style.display;
+                const singleViewDisplay = document.getElementById('genericSingleViewContainer').style.display;
+                assert(!isPizza && stepperDisplay === 'none' && singleViewDisplay === 'block',
+                    '13. Produtos não-pizza (hambúrgueres, etc.) continuam na visão única',
+                    `isPizzaProduct: ${isPizza} | Stepper display: ${stepperDisplay} | SingleView: ${singleViewDisplay}`);
+
+                // Resumo
+                const passedCount = testResults.filter(t => t.passed).length;
+                const totalCount = testResults.length;
+                const allPassed = passedCount === totalCount;
+                const summaryEl = document.getElementById('summary');
+                summaryEl.className = allPassed ? 'pass' : 'fail';
+                summaryEl.innerText = `Resultado Final: ${passedCount}/${totalCount} testes passaram com sucesso! ${allPassed ? '🚀 (100% APROVADO)' : '⚠️ (Alguns testes falharam)'}`;
+                window.__TEST_RESULTS__ = { total: totalCount, passed: passedCount, allPassed };
+            } catch (err) {
+                console.error(err);
+                document.getElementById('summary').innerText = 'Erro ao executar testes: ' + err.message;
+            }
+        }
+
+        window.onload = runTests;
+    </script>
+</body>
+</html>

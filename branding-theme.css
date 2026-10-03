@@ -1,0 +1,112 @@
+/* ==========================================================================
+   JC Food — Design System & Identidade Visual Oficial
+   Manual de Identidade Visual da JC Informática:
+     - Preto Absoluto  #000000  (R0 G0 B0 | C91 M79 Y62 K97)
+     - Azul Cósmico    #0037FF  (R0 G55 B255 | C91 M71 Y0 K0)
+     - Branco Nebuloso #F5F5F5  (R245 G245 B245 | C66 M5 Y0 K0)
+   Tipografia Oficial:
+     - Basement Grotesque Black — Nome e Títulos
+     - Sora                     — Para Textos
+   ========================================================================== */
+
+/* ---------- FONTES OFICIAIS ---------- */
+@font-face {
+  font-family: 'Basement Grotesque';
+  src: url('fonts/BasementGrotesque-Black.woff2') format('woff2'),
+       url('fonts/BasementGrotesque-Black.woff') format('woff');
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Identidade da Marca */
+    --brand-name: "JC Food";
+    --brand-slogan: "Tecnologia & Inovação para o seu Delivery";
+    --brand-company: "JC Informática";
+    
+    /* === PALETA OFICIAL JC INFORMÁTICA === */
+    --black:            #000000;                      /* Preto Absoluto */
+    --blue:             #0037FF;                      /* Azul Cósmico Oficial */
+    --blue-light:       #2955FF;                      /* Azul Cósmico clareado */
+    --blue-dark:        #0029CC;                      /* Azul Cósmico escurecido */
+    --blue-glow:        rgba(0, 55, 255, 0.35);       /* Brilho Azul Cósmico */
+    
+    /* Backgrounds Tecnológicos (Site Oficial JC) */
+    --dark:             #05080F;                      /* Fundo principal quase preto */
+    --dark-2:           #080D1A;                      /* Fundo seções alternadas */
+    --dark-3:           #0C1220;                      /* Cards e painéis */
+    --dark-4:           #101828;                      /* Inputs e fundos internos */
+    
+    /* Textos (Branco Nebuloso & Tons de Cinza) */
+    --white:            #F5F5F5;                      /* Branco Nebuloso Oficial */
+    --gray:             #8A93A8;                      /* Cinza médio */
+    --gray-light:       #BEC6D8;                      /* Cinza claro */
+    --gray-dark:        #4D566B;                      /* Cinza escuro para detalhes */
+    
+    /* Bordas Tecnológicas */
+    --border:           rgba(0, 55, 255, 0.2);        /* Borda padrão sutil */
+    --border-glow:      rgba(0, 55, 255, 0.5);        /* Borda iluminada no hover */
+    --border-subtle:    rgba(255, 255, 255, 0.08);    /* Borda neutra */
+    
+    /* Aliases para Compatibilidade de Classes Existentes */
+    --primary:          var(--blue);
+    --primary-hover:    var(--blue-light);
+    --primary-dark:     var(--blue-dark);
+    --primary-light:    rgba(0, 55, 255, 0.15);
+    --primary-gradient: linear-gradient(135deg, #0037FF 0%, #0022AA 100%);
+    
+    --bg-main:          var(--dark);
+    --bg-card:          var(--dark-3);
+    --bg-card-hover:    #101828;
+    --bg-surface:       var(--dark-2);
+    --bg-sidebar:       #04060B;
+    --bg-input:         var(--dark-4);
+    --bg-drawer:        var(--dark-3);
+    --bg-modal:         var(--dark-3);
+    
+    --text-main:        var(--white);
+    --text-body:        var(--white);
+    --text-muted:       var(--gray);
+    --text-light:       var(--gray-light);
+    --text-gold:        var(--blue-light);
+    --text-on-gold:     #FFFFFF;
+    
+    --border-color:       var(--border-subtle);
+    --border-color-light: var(--border);
+    --border-gold:        var(--border);
+    --border-gold-active: var(--blue);
+    
+    /* Status Operacionais */
+    --accent-green:       #00E676;
+    --accent-green-light: rgba(0, 230, 118, 0.15);
+    --whatsapp-green:     #25D366;
+    --status-red:         #FF334B;
+    --status-red-light:   rgba(255, 51, 75, 0.15);
+    
+    /* === TIPOGRAFIA OFICIAL === */
+    --font-title:   'Basement Grotesque', 'Sora', sans-serif;
+    --font-main:    'Sora', sans-serif;
+    --font-display: 'Basement Grotesque', 'Sora', sans-serif;
+    --font-primary: 'Sora', sans-serif;
+    --font-heading: 'Basement Grotesque', 'Sora', sans-serif;
+    --font-script:  'Sora', sans-serif;
+    
+    /* Raios e Sombras */
+    --radius-sm:    8px;
+    --radius-md:    12px;
+    --radius-lg:    16px;
+    --radius-pill:  9999px;
+    
+    --shadow-sm:    0 2px 10px rgba(0, 0, 0, 0.5);
+    --shadow-md:    0 4px 24px rgba(0, 0, 0, 0.6);
+    --shadow-lg:    0 12px 36px rgba(0, 0, 0, 0.85);
+    --shadow-blue:  0 4px 32px rgba(0, 55, 255, 0.35);
+    --gold-glow:    0 0 20px rgba(0, 55, 255, 0.45);
+    --shadow-gold:  0 4px 25px rgba(0, 55, 255, 0.45);
+    
+    --transition:   all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.15s ease;
+}

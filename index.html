@@ -5,63 +5,218 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO Meta Tags -->
-    <title>Mundo da Pizza | Cardápio Digital Premium</title>
-    <meta name="description" content="Peça as melhores pizzas artesanais da região sem sair de casa. Ingredientes frescos, bordas recheadas e entrega rápida. Monte sua pizza agora!">
-    <meta name="keywords" content="pizzaria, cardapio digital, delivery pizza, pizza meio a meio, Mundo da Pizza, pizza artesanal">
-    <meta name="author" content="Mundo da Pizza">
+    <title>JC Food | Cardápio Digital &amp; Delivery Oficial</title>
+    <meta name="description" content="JC Food - Demonstração oficial do sistema de cardápio digital, delivery e atendimento inteligente da JC Informática.">
+    <meta name="keywords" content="cardápio digital, delivery, jc food, jc informática, pedidos online, automação comercial">
+    <meta name="author" content="JC Informática">
     
     <!-- Open Graph (Facebook / WhatsApp) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Mundo da Pizza - Cardápio Digital & Delivery">
-    <meta property="og:description" content="Do forno para sua mesa! Faça seu pedido online de forma simples e rápida. Monte pizzas de até 4 sabores.">
-    <meta property="og:image" content="assets/pizza_hero.png">
+    <meta property="og:title" content="JC Food - Cardápio Digital &amp; Delivery">
+    <meta property="og:description" content="Demonstração interativa do sistema de cardápio digital e delivery da JC Informática.">
+    <meta property="og:image" content="assets/logo_jc_oficial.png">
     
-    <!-- Fonts: Playfair Display for headings & Outfit for clean body text -->
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+    <link rel="apple-touch-icon" href="assets/simbolo_branco.png">
+    
+    <!-- Fonts & Icons Oficiais JC Informática -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <!-- Google Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     
-    <!-- Icons (Google Material Symbols) -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    
+    <!-- Design System & Branding Tokens -->
+    <link rel="stylesheet" href="branding-theme.css?v=2">
     <!-- CSS File -->
-    <link rel="stylesheet" href="index.css?v=4">
+    <link rel="stylesheet" href="index.css?v=7">
+    <!-- Totem / Autoatendimento CSS -->
+    <link rel="stylesheet" href="totem.css?v=1">
     
     <!-- PWA & Mobile Optimization -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#121214">
+    <meta name="theme-color" content="#05080F">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="assets/icon-192.png">
 </head>
 <body>
 
-    <!-- Header & Hero Section -->
-    <header class="hero-section">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <div class="header-top">
-                <div class="status-badge open" id="statusBadge">
-                    <span class="dot animate-pulse"></span>
-                    Aberto agora para pedidos
-                </div>
+    <!-- Barra Superior Fixa do Totem (Modo Autoatendimento) -->
+    <header class="totem-header-bar" id="totemTopBar" aria-label="Cabeçalho Autoatendimento">
+        <div class="totem-header-brand">
+            <img src="assets/simbolo_branco.png" alt="Logo" class="totem-header-logo" onerror="this.src='assets/logo-icon.png'">
+            <div>
+                <h1 class="totem-header-title">
+                    <span>Fina Massa Pizzaria</span>
+                    <span class="totem-header-badge">AUTOATENDIMENTO</span>
+                </h1>
+            </div>
+        </div>
+        <div class="totem-header-actions">
+            <button type="button" class="btn-totem-home" onclick="TotemManager.handleHomeButtonTouch()" title="Voltar ao início">
+                <span class="material-symbols-rounded">home</span>
+                <span>Início</span>
+            </button>
+            <button type="button" class="btn-totem-cart" onclick="toggleCart(true)" title="Ver meu pedido">
+                <span class="material-symbols-rounded">shopping_basket</span>
+                <span>Meu Pedido</span>
+                <span class="totem-cart-counter" id="totemHeaderCartCount">0</span>
+            </button>
+        </div>
+    </header>
 
+    <!-- ESTADO 1: TELA DE ESPERA / PUBLICIDADE FULLSCREEN (#totemIdleScreen) -->
+    <div id="totemIdleScreen" onclick="TotemManager.startOrdering()" aria-label="Tela de Espera do Totem">
+        <!-- Palco de Mídia (Imagens e Vídeos) -->
+        <div class="totem-media-stage" id="totemMediaStage"></div>
+        <div class="totem-idle-overlay"></div>
+
+        <!-- Topo da Tela de Espera -->
+        <div class="totem-idle-header">
+            <div class="totem-idle-pizzeria-info">
+                <img src="assets/simbolo_branco.png" alt="Fina Massa" class="totem-idle-logo" onerror="this.src='assets/logo.png'">
+                <div>
+                    <h2 class="totem-idle-pizzeria-title">Fina Massa Pizzaria</h2>
+                    <p class="totem-idle-pizzeria-tagline">Pizzas Artesanais &amp; Lanches Especiais</p>
+                </div>
+            </div>
+            <div class="totem-idle-status-chip">
+                <span class="dot-pulse"></span>
+                <span>Autoatendimento Aberto</span>
+            </div>
+        </div>
+
+        <!-- Indicadores de Slides -->
+        <div class="totem-idle-indicators" id="totemIdleIndicators"></div>
+
+        <!-- Rodapé & Chamada "TOQUE PARA FAZER SEU PEDIDO" -->
+        <div class="totem-idle-cta-wrapper">
+            <div class="totem-idle-caption">
+                <h3 class="totem-idle-caption-title" id="totemIdleCaptionTitle">Pizzas Artesanais Fina Massa</h3>
+                <p class="totem-idle-caption-desc" id="totemIdleCaptionDesc">Massa fina, bordas recheadas e os melhores ingredientes selecionados.</p>
             </div>
             
-            <div class="pizzeria-brand-wrapper">
-                <img src="assets/logo.png" alt="Mundo da Pizza Logo" class="pizzeria-logo">
-                <h1 class="pizzeria-title">Mundo da Pizza</h1>
-            </div>
-            <p class="pizzeria-subtitle">Pizza Tradicional | Pizza Trem | Borda Vulcão</p>
+            <button type="button" class="totem-cta-button" onclick="event.stopPropagation(); TotemManager.startOrdering();">
+                <span class="material-symbols-rounded">touch_app</span>
+                <span>TOQUE PARA FAZER SEU PEDIDO</span>
+            </button>
+            <div class="totem-cta-hint">Monte sua pizza, escolha bebidas e faça seu pedido sem filas!</div>
+        </div>
+    </div>
+
+    <!-- Top Bar Institucional de Integração JC Informática -->
+    <nav class="jc-integration-bar" id="jcIntegrationBar" aria-label="Navegação Institucional">
+        <div class="container jc-integration-inner">
+            <a href="https://www.jcinformatica.net.br/" target="_blank" rel="noopener" class="jc-brand-link" title="Ir para o site principal da JC Informática">
+                <img src="assets/logo_jc_oficial.png" alt="JC Informática" class="jc-brand-img">
+                <span class="jc-product-badge">
+                    <span class="jc-badge-dot"></span>
+                    JC Food Demo
+                </span>
+            </a>
             
-            <div class="hero-slogan">
-                <span class="tag">Do forno pra sua mesa</span>
-                <span class="tag bg-green">Ingredientes frescos</span>
-                <button id="promoBtn" class="promo-tag-btn blinking-btn" onclick="openPromoModal(true)" style="display: none;">
-                    <span class="material-symbols-rounded" style="font-size: 16px; margin-right: 4px; vertical-align: middle;">local_offer</span>
-                    Acesse a promoção do dia 🔥
+            <div class="jc-top-actions">
+                <button type="button" class="jc-nav-btn jc-nav-theme" onclick="ThemeManager.toggle()" title="Studio de Cores (Personalizar para Apresentação)">
+                    <i class="fas fa-palette"></i>
+                    <span>Studio de Cores</span>
                 </button>
+                <a href="https://www.jcinformatica.net.br/" target="_blank" rel="noopener" class="jc-nav-link" title="Voltar ao site institucional">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Site Principal</span>
+                </a>
+                <a href="painel/index.html" class="jc-nav-btn jc-nav-panel" title="Acessar painel administrativo do restaurante">
+                    <i class="fas fa-desktop"></i>
+                    <span>Painel Gestor</span>
+                </a>
+                <a href="https://wa.me/555432814464" target="_blank" rel="noopener" class="jc-nav-btn jc-nav-whatsapp" title="Falar no WhatsApp com a JC Informática">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>(54) 3281-4464</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header & Hero Section Oficial -->
+    <header class="hero-section">
+        <div class="hero-bg">
+            <div class="triangle-grid" aria-hidden="true"></div>
+            <div class="hero-glow" aria-hidden="true"></div>
+            <div class="hero-glow-2" aria-hidden="true"></div>
+        </div>
+
+        <div class="container hero-content">
+            <div class="header-top">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <i class="fas fa-bolt"></i> Sistema Integrado de Delivery &amp; Automação
+                </div>
+                
+                <div class="header-user-actions">
+                    <div class="status-badge open" id="statusBadge">
+                        <span class="dot animate-pulse"></span>
+                        Aberto para pedidos
+                    </div>
+                    <button type="button" class="btn-customer-account" id="customerAccountBtn" onclick="openCustomerAuthOrAccount()" title="Identificação / Minha Conta">
+                        <span class="material-symbols-rounded">person</span>
+                        <span id="customerAccountBtnLabel">Entrar</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="brand-wrapper pizzeria-brand-wrapper">
+                <div class="brand-monogram">
+                    <img src="assets/simbolo_branco.png" alt="Símbolo JC Informática" class="brand-symbol-img" onerror="this.src='assets/logo-icon.png'">
+                </div>
+                <h1 class="brand-title pizzeria-title" id="headerCompanyName">JC Food</h1>
+            </div>
+            
+            <h2 class="hero-headline">
+                Potência e agilidade para o seu <span class="accent text-glow">Delivery</span>.
+            </h2>
+            <p class="brand-subtitle pizzeria-subtitle" id="headerCompanySlogan">
+                Cardápio digital inteligente, pedidos em tempo real e automação comercial completa desenvolvida pela JC Informática.
+            </p>
+            
+            <div class="hero-actions">
+                <a href="#categoriesNav" class="btn btn-hero-primary">
+                    <i class="fas fa-utensils"></i> Explorar Cardápio
+                </a>
+                <a href="painel/index.html" class="btn btn-hero-outline">
+                    <i class="fas fa-chart-line"></i> Painel do Restaurante
+                </a>
+                <a href="https://wa.me/555432814464" target="_blank" rel="noopener" class="btn btn-hero-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Chamar no WhatsApp
+                </a>
+            </div>
+
+            <div class="hero-tags">
+                <span><i class="fas fa-check-circle"></i> Pedidos em Tempo Real</span>
+                <span><i class="fas fa-check-circle"></i> Painel Kanban Gestor</span>
+                <span><i class="fas fa-check-circle"></i> Impressão Térmica Automática</span>
+                <span><i class="fas fa-check-circle"></i> Mesas, Balcão &amp; Delivery</span>
+            </div>
+        </div>
+
+        <!-- Marquee Strip Tecnológica Oficial JC -->
+        <div class="marquee-strip" aria-hidden="true">
+            <div class="marquee-track">
+                <span>CARDÁPIO DIGITAL INTERATIVO</span>
+                <i class="fas fa-bolt"></i>
+                <span>AUTOMAÇÃO COMERCIAL</span>
+                <i class="fas fa-bolt"></i>
+                <span>PEDIDOS EM TEMPO REAL</span>
+                <i class="fas fa-bolt"></i>
+                <span>PAINEL GESTOR KANBAN</span>
+                <i class="fas fa-bolt"></i>
+                <span>IMPRESSÃO TÉRMICA</span>
+                <i class="fas fa-bolt"></i>
+                <span>JC INFORMÁTICA • 20 ANOS</span>
+                <i class="fas fa-bolt"></i>
+                <span>DELIVERY &amp; ATENDIMENTO INTELIGENTE</span>
+                <i class="fas fa-bolt"></i>
             </div>
         </div>
     </header>
@@ -70,8 +225,11 @@
     <div class="sticky-nav-container">
         <div class="container sticky-nav-wrapper">
             <nav class="categories-nav" id="categoriesNav">
-                <a href="#pizzas-section" class="nav-link active" onclick="setActiveCategoryTab(event, 'pizzas-section')">Pizzas</a>
-                <a href="#bebidas-section" class="nav-link" onclick="setActiveCategoryTab(event, 'bebidas-section')">Bebidas</a>
+                <a href="#hamburgueres-section" class="nav-link active" onclick="setActiveCategoryTab(event, 'hamburgueres-section')">🍔 Hambúrgueres &amp; Lanches</a>
+                <a href="#pizzas-tradicionais-section" class="nav-link" onclick="setActiveCategoryTab(event, 'pizzas-tradicionais-section')">🍕 Pizzas Tradicionais</a>
+                <a href="#pizzas-especiais-section" class="nav-link" onclick="setActiveCategoryTab(event, 'pizzas-especiais-section')">⭐ Pizzas Especiais</a>
+                <a href="#calzones-section" class="nav-link" onclick="setActiveCategoryTab(event, 'calzones-section')">🥟 Calzones</a>
+                <a href="#bebidas-section" class="nav-link" onclick="setActiveCategoryTab(event, 'bebidas-section')">🥤 Bebidas</a>
             </nav>
             
             <div class="search-box">
@@ -84,58 +242,115 @@
     <!-- Main Content Grid -->
     <main class="main-container container">
         
-        <!-- Promocional Custom Pizza Banner -->
-        <div class="custom-pizza-promo">
-            <div class="promo-text">
-                <h3>Monte sua própria pizza!</h3>
-                <p>Escolha o tamanho, adicione bordas recheadas artesanais e monte do seu jeito!</p>
-                <button class="btn btn-primary" onclick="setActiveCategoryTab(null, 'pizzas-section')" style="display: inline-flex; align-items: center; gap: 8px;">
-                    <span class="material-symbols-rounded">local_pizza</span>
-                    Escolher Tamanho &amp; Montar
-                </button>
-            </div>
-            <div class="promo-image-wrapper">
-                <img src="assets/pizza_banner.png" alt="Monte sua Pizza">
-            </div>
-        </div>
-
         <!-- Menu Sections -->
         <div class="menu-layout">
             <div class="menu-items-section">
-                <!-- Section: Pizzas -->
-                <section id="pizzas-section" class="menu-category-section">
-                    <h2 class="category-title">Escolha o Tamanho da Pizza</h2>
-                    <div class="items-grid" id="pizzasGrid">
-                        <!-- Dynamically filled by JS -->
+                <!-- Seção: Hambúrgueres & Lanches -->
+                <section id="hamburgueres-section" class="menu-category-section">
+                    <div class="category-header-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                        <h2 class="category-title" style="margin-bottom: 0;">🍔 Hambúrgueres &amp; Lanches</h2>
+                        <span style="font-size: 11px; background: rgba(255, 152, 0, 0.15); color: #d97706; border: 1px solid rgba(255, 152, 0, 0.4); padding: 3px 8px; border-radius: 4px; font-weight: 700;">BURGUERS &amp; XIS</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0;">Hambúrgueres artesanais e lanches prensados completos com adicionais e opcionais à sua escolha.</p>
+                    <div class="items-grid" id="hamburgueresGrid">
+                        <!-- Preenchido dinamicamente via JS -->
                     </div>
                 </section>
 
-                <!-- Section: Bebidas -->
+                <!-- Seção: Pizzas Tradicionais -->
+                <section id="pizzas-tradicionais-section" class="menu-category-section">
+                    <div class="category-header-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                        <h2 class="category-title" style="margin-bottom: 0;">🍕 Pizzas Tradicionais</h2>
+                        <span style="font-size: 11px; background: rgba(230, 81, 0, 0.1); color: var(--primary, #e65100); border: 1px solid rgba(230, 81, 0, 0.3); padding: 3px 8px; border-radius: 4px; font-weight: 700;">TRADICIONAIS</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0;">Massa fina e crocante com 20 sabores clássicos à sua escolha. Opções de 1, 2 ou 3 sabores e bordas artesanais.</p>
+                    <div class="items-grid" id="pizzasTradicionaisGrid">
+                        <!-- Preenchido dinamicamente via JS -->
+                    </div>
+                </section>
+
+                <!-- Seção: Pizzas Especiais -->
+                <section id="pizzas-especiais-section" class="menu-category-section">
+                    <div class="category-header-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                        <h2 class="category-title" style="margin-bottom: 0;">⭐ Pizzas Especiais</h2>
+                        <span style="font-size: 11px; background: rgba(245, 166, 35, 0.15); color: #b87a00; border: 1px solid rgba(245, 166, 35, 0.4); padding: 3px 8px; border-radius: 4px; font-weight: 700;">ESPECIAIS &amp; NOBRES</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0;">40 sabores nobres preparados com carnes selecionadas, queijos especiais e sobremesas artesanais.</p>
+                    <div class="items-grid" id="pizzasEspeciaisGrid">
+                        <!-- Preenchido dinamicamente via JS -->
+                    </div>
+                </section>
+
+                <!-- Seção: Calzones -->
+                <section id="calzones-section" class="menu-category-section">
+                    <h2 class="category-title">🥟 Calzones Artesanais</h2>
+                    <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0;">Massa fechada recheada e assada com crosta dourada crocante.</p>
+                    <div class="items-grid" id="calzonesGrid">
+                        <!-- Preenchido dinamicamente via JS -->
+                    </div>
+                </section>
+
+                <!-- Seção: Bebidas -->
                 <section id="bebidas-section" class="menu-category-section">
-                    <h2 class="category-title">Bebidas</h2>
+                    <h2 class="category-title">🥤 Bebidas Geladas</h2>
+                    <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0;">Refrigerantes, cervejas, sucos, vinhos e águas para acompanhar seu pedido.</p>
                     <div class="items-grid" id="bebidasGrid">
-                        <!-- Dynamically filled by JS -->
+                        <!-- Preenchido dinamicamente via JS -->
                     </div>
                 </section>
             </div>
         </div>
     </main>
 
-    <!-- Footer Information -->
+    <!-- Footer Oficial Alinhado ao Site JC Informática -->
     <footer class="footer-section">
         <div class="container footer-content">
-            <div class="footer-brand">
-                <h2>Mundo da Pizza</h2>
-                <p>Pizza Tradicional | Pizza Trem | Borda Vulcão</p>
-            </div>
-            <div class="footer-info">
-                <p><span class="material-symbols-rounded">location_on</span> R. Cel. Alfredo Steglich, 28 - sala 4 - Centro, Nova Petrópolis - RS</p>
-                <p id="footerCompanyPhone"><span class="material-symbols-rounded">phone</span> (54) 99698-5724</p>
-                <p><span class="material-symbols-rounded">schedule</span> Todos os dias das 18h às 23h</p>
+            <div class="footer-grid">
+                <div class="footer-col footer-col-brand">
+                    <a href="https://www.jcinformatica.net.br/" target="_blank" rel="noopener" class="footer-logo-link">
+                        <img src="assets/logo_jc_oficial.png" alt="JC Informática" class="footer-logo-img">
+                    </a>
+                    <p class="footer-desc">
+                        Mais de 20 anos de experiência com tecnologia, agilidade e confiança em Nova Petrópolis e região.
+                    </p>
+                    <div class="footer-socials">
+                        <a href="https://www.instagram.com/jcinformaticanp/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/jcinformatica.br" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://wa.me/555432814464" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h3 class="footer-col-title">Soluções JC</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://www.jcinformatica.net.br/#servicos" target="_blank" rel="noopener"><i class="fas fa-tools"></i> Assistência Técnica</a></li>
+                        <li><a href="https://www.jcinformatica.net.br/#automacao" target="_blank" rel="noopener"><i class="fas fa-cash-register"></i> Automação Comercial</a></li>
+                        <li><a href="https://www.jcinformatica.net.br/#gamer" target="_blank" rel="noopener"><i class="fas fa-gamepad"></i> Equipamentos Gamer</a></li>
+                        <li><a href="painel/index.html"><i class="fas fa-desktop"></i> Painel do Restaurante</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3 class="footer-col-title">Atendimento Presencial</h3>
+                    <p class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Av. 15 de Novembro, 1540, Sala 110, Centro<br>Nova Petrópolis, RS — CEP 95150-000</span>
+                    </p>
+                    <p class="footer-contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>Telefone: (54) 3281-4464</span>
+                    </p>
+                    <p class="footer-contact-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>WhatsApp: (54) 3281-4464</span>
+                    </p>
+                </div>
             </div>
         </div>
         <div class="footer-bottom text-center">
-            <p>&copy; 2026 Mundo da Pizza - Todos os direitos reservados.</p>
+            <div class="container">
+                <p>&copy; 2026 <strong>JC Informática</strong>. Todos os direitos reservados. Demonstração Interativa <strong>JC Food</strong>.</p>
+            </div>
         </div>
     </footer>
 
@@ -178,11 +393,11 @@
                 </div>
                 <div class="summary-row">
                     <span>Taxa de Entrega</span>
-                    <span id="cartDeliveryFee">R$ 7,00</span>
+                    <span id="cartDeliveryFee">Grátis</span>
                 </div>
                 <div class="summary-row total">
                     <span>Total</span>
-                    <span id="cartTotal">R$ 7,00</span>
+                    <span id="cartTotal">R$ 0,00</span>
                 </div>
                 
                 <button class="btn btn-primary btn-block checkout-btn" onclick="openCheckoutModal()">
@@ -193,126 +408,220 @@
         </div>
     </aside>
 
-    <!-- Pizza Customizer / Multi-Flavor Modal -->
-    <div class="modal-overlay" id="customizerModal">
+    <!-- Generic Product Customizer Modal (Mobile-First) -->
+    <div class="modal-overlay" id="pizzaCustomizerModal">
         <div class="modal-card">
             <div class="modal-header-image">
-                <img id="customizerHeaderImg" src="assets/pizza_hero.png" alt="Pizza Customizer">
+                <img id="pizzaModalHeaderImg" src="assets/pizza_hero.png" alt="Personalizar Item" onerror="this.src='assets/pizza_hero.png'">
                 <button class="btn-close-circle" onclick="closePizzaCustomizer()">
                     <span class="material-symbols-rounded">close</span>
                 </button>
-                <div class="modal-header-badge">Montar Pizza</div>
+                <div class="modal-header-badge" id="pizzaModalBadge">JC Food</div>
             </div>
             
             <div class="modal-body">
-                <h2 id="customizerTitle">Pizza Personalizada</h2>
-                <p class="customizer-desc" id="customizerDesc">Escolha o tamanho e monte a pizza do seu jeito.</p>
+                <h2 id="pizzaModalTitle">Personalizar Item</h2>
+                <div id="pizzaModalPriceTag" style="font-size: 18px; font-weight: 800; color: var(--primary, #74112B); margin-bottom: 6px;">R$ 0,00</div>
+                <p class="customizer-desc" id="pizzaModalDesc" style="margin-bottom: 16px;">Selecione suas preferências e monte seu item.</p>
                 
-                <form id="pizzaCustomizerForm">
-                    <!-- Step 1: Size (Hidden, value selected from home page) -->
-                    <div class="customizer-section" style="display: none;">
-                        <div class="section-title">
-                            <span class="number">0</span>
-                            <h3>Escolha o tamanho</h3>
-                            <span class="badge badge-required">Obrigatório</span>
+                    <!-- Stepper de Etapas do Novo Fluxo de Pizza (Estilo Mundo da Pizza / JC Food) -->
+                    <div class="pizza-wizard-stepper" id="pizzaWizardStepper" style="display: none;" role="navigation" aria-label="Etapas da personalização da pizza">
+                        <div class="wizard-step-node active" id="wizardNode_1" onclick="goToPizzaWizardStep(1)">
+                            <div class="step-node-badge">1</div>
+                            <span class="step-node-label">Sabores</span>
                         </div>
-                        <div class="size-options-grid">
-                            <label class="size-card">
-                                <input type="radio" name="pizza-size" value="broto" data-price="65" data-max-flavors="1" checked>
-                                <div class="size-card-content">
-                                    <span class="size-title">Broto <span class="size-detail">(4 fatias)</span></span>
-                                    <span class="size-rules">Apenas 1 sabor</span>
-                                    <span class="size-price">A partir de R$ 65,00</span>
-                                </div>
-                            </label>
-                            
-                            <label class="size-card">
-                                <input type="radio" name="pizza-size" value="media" data-price="75" data-max-flavors="2">
-                                <div class="size-card-content">
-                                    <span class="size-title">Média <span class="size-detail">(8 fatias)</span></span>
-                                    <span class="size-rules">Até 2 sabores</span>
-                                    <span class="size-price">A partir de R$ 75,00</span>
-                                </div>
-                            </label>
-                            
-                            <label class="size-card">
-                                <input type="radio" name="pizza-size" value="grande" data-price="90" data-max-flavors="3">
-                                <div class="size-card-content">
-                                    <span class="size-title">Grande <span class="size-detail">(12 fatias)</span></span>
-                                    <span class="size-rules">Até 3 sabores</span>
-                                    <span class="size-price">A partir de R$ 90,00</span>
-                                </div>
-                            </label>
-                            
-                            <label class="size-card">
-                                <input type="radio" name="pizza-size" value="vulcao" data-price="90" data-max-flavors="2">
-                                <div class="size-card-content">
-                                    <span class="size-title">Vulcão <span class="size-detail">(12 fatias)</span></span>
-                                    <span class="size-rules">Até 2 sabores</span>
-                                    <span class="size-price">A partir de R$ 90,00</span>
-                                </div>
-                            </label>
-
-                            <label class="size-card">
-                                <input type="radio" name="pizza-size" value="trem" data-price="160" data-max-flavors="4">
-                                <div class="size-card-content">
-                                    <span class="size-title">Trem <span class="size-detail">(24 fatias)</span></span>
-                                    <span class="size-rules">Até 4 sabores</span>
-                                    <span class="size-price">A partir de R$ 160,00</span>
-                                </div>
-                            </label>
+                        <div class="wizard-step-connector" id="wizardConnector_1"></div>
+                        <div class="wizard-step-node" id="wizardNode_2" onclick="goToPizzaWizardStep(2)">
+                            <div class="step-node-badge">2</div>
+                            <span class="step-node-label">Borda</span>
+                        </div>
+                        <div class="wizard-step-connector" id="wizardConnector_2"></div>
+                        <div class="wizard-step-node" id="wizardNode_3" onclick="goToPizzaWizardStep(3)">
+                            <div class="step-node-badge">3</div>
+                            <span class="step-node-label">Bebida</span>
+                        </div>
+                        <div class="wizard-step-connector" id="wizardConnector_3"></div>
+                        <div class="wizard-step-node" id="wizardNode_4" onclick="goToPizzaWizardStep(4)">
+                            <div class="step-node-badge">4</div>
+                            <span class="step-node-label">Revisão</span>
                         </div>
                     </div>
 
-                    <!-- Step 2: Crust/Border (First option shown) -->
-                    <div class="customizer-section">
+                    <!-- Containers do Novo Fluxo de Pizza por Etapas -->
+                    <div id="pizzaWizardContainer" style="display: none;">
+                        <!-- ETAPA 1: SABORES -->
+                        <div class="wizard-step-panel" id="wizardPanel_1">
+                            <div class="wizard-step-header">
+                                <div class="wizard-step-header-text">
+                                    <h3 class="wizard-step-title" id="wizardSaboresTitle">Escolha os Sabores</h3>
+                                    <p class="wizard-step-desc" id="wizardSaboresSubtitle">Selecione os sabores da sua pizza</p>
+                                </div>
+                                <span class="wizard-status-chip" id="wizardSaboresProgressChip">0 selecionados</span>
+                            </div>
+                            <!-- Seletor de slots para pizzas de 2 ou 3 sabores -->
+                            <div class="wizard-flavor-slots-bar" id="wizardFlavorSlotsBar" style="display: none;"></div>
+                            <!-- Banner contextual do sabor atualmente em seleção (ex: 1/3, 2/3, 3/3) -->
+                            <div class="wizard-active-slot-banner" id="wizardActiveSlotBanner" style="display: none;"></div>
+                            <!-- Barra de busca rápida de sabores -->
+                            <div class="wizard-search-box" style="margin-bottom: 12px;">
+                                <input type="text" class="custom-opt-flavor-search" id="wizardFlavorSearchInput" placeholder="🔍 Filtrar sabores (ex: calabresa, 4 queijos, frango...)" oninput="filterPizzaWizardFlavors(this.value)">
+                            </div>
+                            <!-- Lista de sabores renderizados dinamicamente -->
+                            <div class="wizard-flavors-list" id="wizardFlavorsList"></div>
+                        </div>
+
+                        <!-- ETAPA 2: BORDA -->
+                        <div class="wizard-step-panel" id="wizardPanel_2" style="display: none;">
+                            <div class="wizard-step-header">
+                                <div class="wizard-step-header-text">
+                                    <h3 class="wizard-step-title">Escolha a Borda</h3>
+                                    <p class="wizard-step-desc">Massa tradicional ou recheada para sua pizza</p>
+                                </div>
+                                <span class="wizard-status-chip" id="wizardBordaSelectedChip">Borda definida</span>
+                            </div>
+                            <!-- Lista de opções de borda -->
+                            <div class="wizard-options-list" id="wizardBordasList"></div>
+                        </div>
+
+                        <!-- ETAPA 3: BEBIDA -->
+                        <div class="wizard-step-panel" id="wizardPanel_3" style="display: none;">
+                            <div class="wizard-step-header">
+                                <div class="wizard-step-header-text">
+                                    <h3 class="wizard-step-title">Deseja adicionar uma Bebida?</h3>
+                                    <p class="wizard-step-desc">Aproveite para incluir uma bebida gelada (opcional)</p>
+                                </div>
+                                <span class="wizard-status-chip" id="wizardBebidasCountChip">Opcional</span>
+                            </div>
+                            <!-- Barra de busca rápida de bebidas -->
+                            <div class="wizard-search-box" style="margin-bottom: 12px;">
+                                <input type="text" class="custom-opt-flavor-search" id="wizardDrinksSearchInput" placeholder="🔍 Buscar refrigerante, suco ou água..." oninput="filterPizzaWizardDrinks(this.value)">
+                            </div>
+                            <!-- Grid / Lista de bebidas disponíveis -->
+                            <div class="wizard-drinks-grid" id="wizardDrinksGrid"></div>
+                        </div>
+
+                        <!-- ETAPA 4: REVISÃO -->
+                        <div class="wizard-step-panel" id="wizardPanel_4" style="display: none;">
+                            <div class="wizard-step-header">
+                                <div class="wizard-step-header-text">
+                                    <h3 class="wizard-step-title">Revise o seu Pedido</h3>
+                                    <p class="wizard-step-desc">Confira todos os itens antes de adicionar ao carrinho</p>
+                                </div>
+                            </div>
+                            <!-- Card de resumo completo -->
+                            <div class="wizard-review-card" id="wizardReviewContent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Container de visão única para hambúrgueres, calzones e itens genéricos -->
+                    <div id="genericSingleViewContainer">
+                        <form id="pizzaCustomizerForm" onsubmit="event.preventDefault()">
+                            <!-- Container dinâmico para os optionGroups do produto -->
+                            <div id="genericOptionGroupsContainer"></div>
+
+                            <!-- Seção de Comentário / Observações com contador 0/140 -->
+                            <div class="customizer-section" id="pizzaCommentSection" style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                                <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <span class="material-symbols-rounded" style="color: var(--accent-gold, #f5a623); font-size: 20px;">edit_note</span>
+                                        <h3 style="margin: 0; font-size: 15px; font-weight: 700;">Algum comentário?</h3>
+                                    </div>
+                                    <span class="comment-char-counter" id="commentCharCounter" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">0 / 140</span>
+                                </div>
+                                <div class="form-group" style="margin: 0;">
+                                    <textarea id="pizzaCustomNotes" maxlength="140" placeholder="Ex: Sem cebola, massa bem crocante, pouco molho..." rows="2" oninput="onCommentTextInput(this)" style="width: 100%; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color); font-family: inherit; font-size: 13px; resize: none; box-sizing: border-box;"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+            </div>
+            
+            <!-- Rodapé para Itens Genéricos (Visão Única) -->
+            <div class="modal-footer" id="pizzaSingleFooter">
+                <div class="customizer-quantity">
+                    <button type="button" class="btn-qty" onclick="adjustPizzaQty(-1)">
+                        <span class="material-symbols-rounded">remove</span>
+                    </button>
+                    <span id="pizzaCustomQty" class="qty-number">1</span>
+                    <button type="button" class="btn-qty" onclick="adjustPizzaQty(1)">
+                        <span class="material-symbols-rounded">add</span>
+                    </button>
+                </div>
+                <button type="button" class="btn btn-primary btn-add-order" id="addPizzaToOrderBtn" onclick="addConfiguredItemToCart()">
+                    <span class="material-symbols-rounded">add_shopping_cart</span>
+                    <span id="pizzaAddButtonLabel">Adicionar ao Pedido — R$ 0,00</span>
+                </button>
+            </div>
+
+            <!-- Rodapé Fixo / Sticky Action Bar para o Fluxo de Pizza por Etapas -->
+            <div class="modal-footer pizza-wizard-footer" id="pizzaWizardFooter" style="display: none;">
+                <button type="button" class="btn btn-outline wizard-btn-back" id="pizzaWizardBackBtn" onclick="pizzaWizardPrevStep()">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                    <span id="pizzaWizardBackText">Voltar</span>
+                </button>
+                <div class="wizard-footer-price-info">
+                    <span class="wizard-footer-price-label">Subtotal</span>
+                    <strong class="wizard-footer-price-val" id="pizzaWizardFooterPrice">R$ 0,00</strong>
+                </div>
+                <button type="button" class="btn btn-primary wizard-btn-next" id="pizzaWizardNextBtn" onclick="pizzaWizardNextStep()">
+                    <span id="pizzaWizardNextText">Avançar</span>
+                    <span class="material-symbols-rounded" id="pizzaWizardNextIcon">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Customizer / Adicionais Modal (Retrocompatibilidade) -->
+    <div class="modal-overlay" id="customizerModal">
+        <div class="modal-card">
+            <div class="modal-header-image">
+                <img id="customizerHeaderImg" src="assets/pizza_hero.png" alt="Personalizar Item" onerror="this.src='assets/pizza_hero.png'">
+                <button class="btn-close-circle" onclick="closeProductCustomizer()">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+                <div class="modal-header-badge">Personalizar</div>
+            </div>
+            
+            <div class="modal-body">
+                <h2 id="customizerTitle">Personalizar Item</h2>
+                <p class="customizer-desc" id="customizerDesc">Escolha os adicionais e observações para o seu item.</p>
+                
+                <form id="productCustomizerForm" onsubmit="event.preventDefault()">
+                    <div class="customizer-section" id="adicionaisSection">
                         <div class="section-title">
                             <span class="number">1</span>
-                            <h3>Borda Recheada?</h3>
+                            <h3>Adicionais e Opcionais</h3>
                             <span class="badge">Opcional</span>
                         </div>
-                        <div class="border-options-grid" id="bordersContainer">
-                            <!-- Carregado dinamicamente via JavaScript -->
-                        </div>
+                        <div class="adicionais-list" id="customizerAdicionaisList"></div>
                     </div>
 
-                    <!-- Step 3: Flavors (Second option shown) -->
                     <div class="customizer-section">
                         <div class="section-title">
                             <span class="number">2</span>
-                            <h3>Escolha os sabores</h3>
-                            <span class="helper-text" id="flavorSelectionLimitText">Selecione exatamente 1 sabor</span>
-                        </div>
-                        <div class="flavors-list" id="customizerFlavorsList">
-                            <!-- Dynamically loaded checkboxes -->
-                        </div>
-                    </div>
-
-                    <!-- Step 4: Notes -->
-                    <div class="customizer-section">
-                        <div class="section-title">
-                            <span class="number">3</span>
-                            <h3>Observações</h3>
+                            <h3>Observações do Item</h3>
                             <span class="badge">Opcional</span>
                         </div>
-                        <textarea id="pizzaNotes" placeholder="Ex: Sem cebola, bem assada, etc." rows="2" maxlength="150"></textarea>
+                        <div class="form-group">
+                            <textarea id="itemCustomNotes" maxlength="140" placeholder="Ex: Sem cebola, bem assado, sem molho..." rows="2"></textarea>
+                        </div>
                     </div>
                 </form>
             </div>
             
             <div class="modal-footer">
-                <div class="quantity-selector">
-                    <button class="qty-btn" type="button" onclick="adjustCustomizerQty(-1)">
+                <div class="customizer-quantity">
+                    <button type="button" class="btn-qty" onclick="adjustCustomizerQty(-1)">
                         <span class="material-symbols-rounded">remove</span>
                     </button>
-                    <span class="qty-number" id="customizerQty">1</span>
-                    <button class="qty-btn" type="button" onclick="adjustCustomizerQty(1)">
+                    <span id="customizerQty" class="qty-number">1</span>
+                    <button type="button" class="btn-qty" onclick="adjustCustomizerQty(1)">
                         <span class="material-symbols-rounded">add</span>
                     </button>
                 </div>
-                
-                <button class="btn btn-primary flex-grow" type="button" id="btnAddToOrder" onclick="addPizzaToOrder()">
-                    Adicionar ao Pedido — R$ 0,00
+                <button type="button" class="btn btn-primary btn-add-order" id="btnAddToOrder" onclick="addCustomizedProductToCart()">
+                    <span class="material-symbols-rounded">add_shopping_cart</span>
+                    <span id="customizerAddBtnLabel">Adicionar ao Pedido — R$ 0,00</span>
                 </button>
             </div>
         </div>
@@ -320,165 +629,170 @@
 
     <!-- Checkout Modal -->
     <div class="modal-overlay" id="checkoutModal">
-        <div class="modal-card max-width-600">
-            <div class="modal-header">
+        <div class="modal-card checkout-card">
+            <div class="checkout-header">
                 <h2>Finalizar Pedido</h2>
-                <button class="btn-close" onclick="closeCheckoutModal()">
+                <button class="btn-close-circle" onclick="closeCheckoutModal()">
                     <span class="material-symbols-rounded">close</span>
                 </button>
             </div>
             
-            <div class="modal-body pd-24">
-                <form id="checkoutForm">
-                    <!-- Delivery Option -->
-                    <div class="checkout-toggle-group">
-                        <label class="toggle-option active" id="deliveryTab" onclick="setCheckoutType('delivery')">
-                            <span class="material-symbols-rounded">delivery_dining</span>
-                            Entrega (Delivery)
-                        </label>
-                        <label class="toggle-option" id="pickupTab" onclick="setCheckoutType('pickup')">
+            <div class="checkout-body">
+                <form id="checkoutForm" novalidate onsubmit="event.preventDefault(); submitOrder();">
+                    <!-- Delivery / Pickup Toggle -->
+                    <div class="checkout-type-selector">
+                        <button type="button" id="deliveryTab" class="type-tab active" onclick="setCheckoutType('delivery')">
+                            <span class="material-symbols-rounded">moped</span>
+                            <span>Entrega (Delivery)</span>
+                        </button>
+                        <button type="button" id="pickupTab" class="type-tab" onclick="setCheckoutType('pickup')">
                             <span class="material-symbols-rounded">store</span>
-                            Retirada no Balcão
-                        </label>
+                            <span>Retirada no Balcão</span>
+                        </button>
                     </div>
+                    
+                    <!-- Customer Data -->
+                    <div class="checkout-section">
+                        <h3>Seus Dados</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clientName">Seu Nome *</label>
+                                <input type="text" id="clientName" placeholder="Como podemos te chamar?" autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="clientPhone">WhatsApp com DDD *</label>
+                                <input type="tel" id="clientPhone" placeholder="(00) 00000-0000" autocomplete="tel">
+                            </div>
+                        </div>
+                        <!-- Campo para Identificação de Mesa no Totem (Autoatendimento) -->
+                        <div class="form-group totem-table-field" style="margin-top: 10px;">
+                            <label for="totemTableInput">Número da Mesa <span style="font-weight: normal; color: var(--text-muted); font-size: 12px;">(Se for consumir no local)</span></label>
+                            <input type="text" id="totemTableInput" placeholder="Ex: Mesa 04 (ou deixe em branco para retirar)">
+                        </div>
+                    </div>
+                    
+                    <!-- Address Data (Delivery only) -->
+                    <div class="checkout-section" id="addressSection">
+                        <h3>Endereço de Entrega</h3>
+                        
+                        <div class="location-btn-wrapper" style="margin-bottom: 12px;">
+                            <button type="button" id="btnGetLocation" class="btn-get-location" onclick="captureCustomerLocation()">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">my_location</span>
+                                <span>📍 USAR MINHA LOCALIZAÇÃO ATUAL</span>
+                            </button>
+                            <div id="locationStatus" class="location-status" style="display: none;"></div>
+                        </div>
 
-                    <!-- Customer Info -->
-                    <div class="form-section">
-                        <h4>Dados do Cliente</h4>
                         <div class="form-row">
                             <div class="form-group flex-2">
-                                <label for="clientName">Seu Nome *</label>
-                                <input type="text" id="clientName" required autocomplete="name" placeholder="Ex: JC Informática">
+                                <label for="addressStreet">Rua / Logradouro *</label>
+                                <input type="text" id="addressStreet" placeholder="Ex: Av. Principal">
                             </div>
-                            <div class="form-group flex-1">
-                                <label for="clientPhone">WhatsApp *</label>
-                                <input type="tel" id="clientPhone" required autocomplete="tel" inputmode="tel" placeholder="Ex: (54) 3281-4464">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Address Info (conditional) -->
-                    <div class="form-section" id="addressSection">
-                        <h4>Endereço de Entrega</h4>
-                        <div class="form-group">
-                            <label for="addressStreet">Rua / Avenida *</label>
-                            <input type="text" id="addressStreet" required autocomplete="street-address" placeholder="Ex: Rua Vicente da Fontoura">
-                        </div>
-                        <div class="form-row">
                             <div class="form-group flex-1">
                                 <label for="addressNumber">Número *</label>
-                                <input type="text" id="addressNumber" required inputmode="numeric" placeholder="Ex: 1320">
+                                <input type="text" id="addressNumber" placeholder="Ex: 123">
                             </div>
-                            <div class="form-group flex-2">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group flex-1">
                                 <label for="addressBairro">Bairro *</label>
-                                <select id="addressBairro" required onchange="onNeighborhoodChange()">
+                                <select id="addressBairro" onchange="onNeighborhoodChange()">
                                     <option value="" disabled selected>Selecione seu bairro</option>
+                                    <option value="centro">Centro - Taxa a combinar</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="addressRef">Complemento / Ponto de Referência</label>
-                            <input type="text" id="addressRef" placeholder="Ex: Apto 302, próximo à praça">
+                            <div class="form-group flex-1">
+                                <label for="addressRef">Ponto de Referência</label>
+                                <input type="text" id="addressRef" placeholder="Ex: Ao lado do mercado...">
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Payment Info -->
-                    <div class="form-section">
-                        <h4>Forma de Pagamento</h4>
-                        <div class="payment-options-grid">
+                    
+                    <!-- Payment Methods -->
+                    <div class="checkout-section">
+                        <h3>Forma de Pagamento</h3>
+                        <div class="payment-options">
                             <label class="payment-card">
                                 <input type="radio" name="payment-method" value="pix" checked onchange="togglePaymentFields()">
-                                <div class="payment-card-content">
+                                <div class="payment-content">
                                     <span class="material-symbols-rounded">qr_code_2</span>
-                                    <span>Pix</span>
+                                    <span>Pix (Instantâneo)</span>
                                 </div>
                             </label>
+                            
                             <label class="payment-card">
                                 <input type="radio" name="payment-method" value="card" onchange="togglePaymentFields()">
-                                <div class="payment-card-content">
+                                <div class="payment-content">
                                     <span class="material-symbols-rounded">credit_card</span>
                                     <span>Cartão (Maquininha)</span>
                                 </div>
                             </label>
+                            
                             <label class="payment-card">
                                 <input type="radio" name="payment-method" value="cash" onchange="togglePaymentFields()">
-                                <div class="payment-card-content">
+                                <div class="payment-content">
                                     <span class="material-symbols-rounded">payments</span>
                                     <span>Dinheiro</span>
                                 </div>
                             </label>
                         </div>
                         
-                        <div id="cashChangeGroup" class="form-group mt-16 display-none">
+                        <!-- Change for cash -->
+                        <div class="form-group display-none" id="cashChangeGroup" style="margin-top: 10px;">
                             <label for="cashChange">Precisa de troco para quanto?</label>
-                            <input type="text" id="cashChange" inputmode="decimal" placeholder="Ex: R$ 100,00">
+                            <input type="text" id="cashChange" placeholder="Ex: R$ 50,00 ou Não preciso">
                         </div>
-                        
-                        <div id="pixInstructions" class="pix-info-box mt-16">
-                            <p><strong>Chave Pix CNPJ:</strong> 46.564.697/0001-24</p>
-                            <p class="text-sm">Envie o comprovante pelo WhatsApp após enviar o pedido para agilizar sua entrega.</p>
+
+                        <div class="pix-info display-none" id="pixInstructions" style="margin-top: 10px; background: rgba(0, 189, 174, 0.08); border: 1px solid rgba(0, 189, 174, 0.3); border-radius: 8px; padding: 12px;">
+                            <div style="font-size: 13px; color: var(--text-main); font-weight: 600; margin-bottom: 4px;">
+                                🔑 Chave Pix (Celular): <strong id="checkoutPixKeyDisplay" style="color: #00bdae; font-size: 15px; font-weight: 800; user-select: all;">Consulte no WhatsApp</strong>
+                            </div>
+                            <p style="margin: 0; font-size: 12px; color: var(--text-muted);">Faça o pagamento via Pix e envie o comprovante no WhatsApp ao finalizar o pedido.</p>
+                        </div>
+
+                        <!-- Consentimento de Promoções por WhatsApp no Checkout -->
+                        <div class="form-group" style="margin-top: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px 12px;">
+                            <label class="auth-marketing-label" style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; user-select: none;">
+                                <input type="checkbox" id="checkoutMarketingCheckbox" checked style="margin-top: 3px; accent-color: #25d366; width: 18px; height: 18px; cursor: pointer;">
+                                <span style="font-size: 12.5px; color: rgba(255, 255, 255, 0.85); line-height: 1.4;">
+                                    Quero receber novidades e promoções da <strong>JC Food</strong> pelo WhatsApp. 🚀📲
+                                </span>
+                            </label>
                         </div>
                     </div>
+                    
+                    <!-- Submit -->
+                    <div class="checkout-footer">
+                        <div class="checkout-total">
+                            <span>Total a Pagar:</span>
+                            <h4 id="checkoutTotalValue">R$ 0,00</h4>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-submit-order" onclick="submitOrder()">
+                            <span>Enviar Pedido para o WhatsApp</span>
+                            <span class="material-symbols-rounded">send</span>
+                        </button>
+                    </div>
                 </form>
-            </div>
-            
-            <div class="modal-footer checkout-footer">
-                <div class="checkout-total-summary">
-                    <span class="label">Total a pagar:</span>
-                    <span class="price" id="checkoutTotalValue">R$ 0,00</span>
-                </div>
-                
-                <button class="btn btn-success checkout-submit-btn" onclick="submitOrder()">
-                    <span class="material-symbols-rounded">send</span>
-                    Enviar no WhatsApp
-                </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Promoções da Semana -->
-    <div id="promoModal" class="promo-modal-overlay">
-        <div class="promo-modal-card">
-            <button class="promo-close-btn" onclick="closePromoModal()">&times;</button>
-            <div class="promo-modal-header">
-                <span class="promo-badge">Ofertas Imperdíveis 🔥</span>
-                <h2>Promoções da Semana</h2>
-                <p>Aproveite nossos descontos especiais por tempo limitado!</p>
+    <!-- Daily Promo Popup Modal -->
+    <div class="modal-overlay" id="promoModal">
+        <div class="modal-card promo-card">
+            <div class="promo-header">
+                <span class="material-symbols-rounded promo-icon">local_fire_department</span>
+                <h3>Promoção do Dia!</h3>
+                <button class="btn-close-circle" onclick="closePromoModal()">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
             </div>
             <div class="promo-modal-body">
-                <!-- Text-based Promos -->
-                <div id="promoTextBody" style="display: flex; flex-direction: column; gap: 12px;">
-                    <div class="promo-item">
-                        <div class="promo-icon">🍕</div>
-                        <div class="promo-info">
-                            <h3>Borda Recheada Grátis!</h3>
-                            <p>Nas pizzas de tamanho Média e Grande, a borda recheada é por nossa conta!</p>
-                        </div>
-                    </div>
-                    <div class="promo-item highlighted">
-                        <div class="promo-icon">🚂</div>
-                        <div class="promo-info">
-                            <h3>Combo Pizza Trem</h3>
-                            <p>Pizza Trem (24 pedaços) + Borda Recheada + Coca-Cola 2L por apenas R$ 199,90.</p>
-                        </div>
-                    </div>
-                    <div class="promo-item">
-                        <div class="promo-icon">🥤</div>
-                        <div class="promo-info">
-                            <h3>Combo Coca-Cola</h3>
-                            <p>Adicione Coca-Cola 2L ao seu pedido e ganhe desconto na bebida.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Facebook Iframe Embed -->
-                <div id="promoFbContainer" style="display: none; width: 100%; justify-content: center; margin-bottom: 10px;"></div>
+                <p>Confira nossos combos e ofertas especiais nas redes sociais!</p>
             </div>
             <div class="promo-modal-footer">
-                <label class="promo-dont-show-again">
-                    <input type="checkbox" id="dontShowPromoToday">
-                    <span>Não mostrar isso hoje</span>
-                </label>
-                <button class="btn btn-primary" onclick="closePromoModal()" style="width: 100%; justify-content: center;">Aproveitar Ofertas!</button>
+                <button class="btn btn-primary" onclick="closePromoModal()" style="width: 100%; justify-content: center;">Ver Cardápio</button>
             </div>
         </div>
     </div>
@@ -489,7 +803,7 @@
             <span class="material-symbols-rounded">home</span>
             <span>Início</span>
         </a>
-        <a href="#pizzas-section" class="bottom-nav-item" onclick="setActiveCategoryTab(event, 'pizzas-section'); return false;">
+        <a href="#pizzas-tradicionais-section" class="bottom-nav-item" onclick="setActiveCategoryTab(event, 'pizzas-tradicionais-section'); return false;">
             <span class="material-symbols-rounded">local_pizza</span>
             <span>Cardápio</span>
         </a>
@@ -500,20 +814,196 @@
             </div>
             <span>Carrinho</span>
         </a>
-        <a href="#" class="bottom-nav-item" onclick="openPromoModal(true); return false;">
-            <span class="material-symbols-rounded">local_offer</span>
-            <span>Ofertas</span>
+        <a href="#" class="bottom-nav-item" id="bottomNavAccountItem" onclick="openCustomerAuthOrAccount(); return false;">
+            <span class="material-symbols-rounded">person</span>
+            <span id="bottomNavAccountLabel">Entrar</span>
         </a>
     </nav>
 
+    <!-- Modal de Identificação e Login por WhatsApp -->
+    <div class="modal-overlay" id="customerAuthModal">
+        <div class="modal-card auth-card">
+            <button class="btn-close-circle" onclick="closeCustomerAuthModal()" title="Fechar">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="auth-card-header">
+                <img src="assets/logo.png" alt="Fina Massa Pizzaria" class="auth-logo">
+                <h2 class="auth-brand-name">FINA MASSA PIZZARIA</h2>
+                <p class="auth-brand-tagline">Sua pizza favorita está a poucos cliques. 🍕</p>
+            </div>
+
+            <!-- Passo 1: Informar WhatsApp -->
+            <div class="auth-step active" id="authStepPhone">
+                <p class="auth-instruction">Digite seu WhatsApp para continuar:</p>
+                <div class="auth-input-wrapper">
+                    <span class="material-symbols-rounded auth-input-icon">chat</span>
+                    <input type="tel" id="authPhoneInput" class="auth-input" placeholder="(54) 99999-9999" maxlength="15" autocomplete="tel" inputmode="numeric" oninput="maskAuthPhoneInput(this)" onkeydown="if(event.key==='Enter') handleCustomerPhoneSubmit()">
+                </div>
+                <div id="authPhoneError" class="auth-error-msg display-none"></div>
+
+                <button type="button" class="btn btn-primary auth-action-btn" id="btnContinuePhone" onclick="handleCustomerPhoneSubmit()">
+                    <span>CONTINUAR</span>
+                    <span class="material-symbols-rounded">arrow_forward</span>
+                </button>
+
+                <div class="auth-secondary-action">
+                    <button type="button" class="btn-text-link" onclick="closeCustomerAuthModal()">
+                        Explorar o cardápio primeiro
+                    </button>
+                </div>
+            </div>
+
+            <!-- Passo 2: Novo Cliente - Apenas Nome -->
+            <div class="auth-step display-none" id="authStepNewCustomer">
+                <div class="auth-welcome-badge">PRAZER EM CONHECER VOCÊ! 👋</div>
+                <p class="auth-instruction">Como podemos te chamar?</p>
+                <div class="auth-input-wrapper">
+                    <span class="material-symbols-rounded auth-input-icon">person</span>
+                    <input type="text" id="authNameInput" class="auth-input" placeholder="Seu nome" maxlength="50" autocomplete="name" onkeydown="if(event.key==='Enter') handleCustomerRegisterSubmit()">
+                </div>
+                <div id="authNameError" class="auth-error-msg display-none"></div>
+
+                <div class="auth-marketing-wrapper" style="margin: 14px 0 18px 0; text-align: left; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px 12px;">
+                    <label class="auth-marketing-label" style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="authMarketingCheckbox" checked style="margin-top: 3px; accent-color: #25d366; width: 18px; height: 18px; cursor: pointer;">
+                        <span style="font-size: 12.5px; color: rgba(255, 255, 255, 0.85); line-height: 1.4;">
+                            Quero receber novidades e promoções exclusivas da <strong>Fina Massa</strong> pelo WhatsApp. 🍕📲
+                        </span>
+                    </label>
+                </div>
+
+                <button type="button" class="btn btn-primary auth-action-btn" id="btnStartOrdering" onclick="handleCustomerRegisterSubmit()">
+                    <span>COMEÇAR A PEDIR 🍕</span>
+                </button>
+
+                <div class="auth-secondary-action">
+                    <button type="button" class="btn-text-link" onclick="backToPhoneStep()">
+                        ← Voltar e alterar número
+                    </button>
+                </div>
+            </div>
+
+            <!-- Passo 3: Cliente Existente - Reconhecido -->
+            <div class="auth-step display-none" id="authStepExistingCustomer">
+                <div class="auth-welcome-back-header">
+                    <div class="auth-avatar-circle">
+                        <span class="material-symbols-rounded" style="font-size: 32px; color: #0B0C0E;">waving_hand</span>
+                    </div>
+                    <h3 class="auth-welcome-title">Olá, <span id="authExistingCustomerName">Cliente</span>! 👋</h3>
+                    <p class="auth-welcome-subtitle">Que bom ter você de volta.</p>
+                </div>
+
+                <div class="auth-options-grid">
+                    <button type="button" class="btn btn-primary auth-option-btn primary-option" onclick="selectAuthAction('order')">
+                        <span class="material-symbols-rounded">local_pizza</span>
+                        <span>🍕 FAZER PEDIDO</span>
+                    </button>
+                    <button type="button" class="btn auth-option-btn secondary-option" onclick="selectAuthAction('orders')">
+                        <span class="material-symbols-rounded">receipt_long</span>
+                        <span>📦 MEUS PEDIDOS</span>
+                    </button>
+                    <button type="button" class="btn auth-option-btn secondary-option" onclick="selectAuthAction('account')">
+                        <span class="material-symbols-rounded">account_circle</span>
+                        <span>👤 MINHA CONTA</span>
+                    </button>
+                </div>
+
+                <div class="auth-secondary-action" style="margin-top: 16px;">
+                    <button type="button" class="btn-text-link" onclick="handleCustomerLogout()">
+                        Não é você? Trocar de número
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Meus Pedidos -->
+    <div class="modal-overlay" id="customerOrdersModal">
+        <div class="modal-card customer-orders-card">
+            <div class="checkout-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-rounded" style="color: var(--primary); font-size: 24px;">receipt_long</span>
+                    <h2>Meus Pedidos</h2>
+                </div>
+                <button class="btn-close-circle" onclick="closeCustomerOrdersModal()">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            
+            <div class="customer-orders-body">
+                <div id="customerOrdersLoading" class="orders-loading-state display-none">
+                    <div class="loading-spinner"></div>
+                    <span>Buscando seus pedidos...</span>
+                </div>
+
+                <div id="customerOrdersEmpty" class="orders-empty-state display-none">
+                    <span class="material-symbols-rounded" style="font-size: 48px; color: var(--text-muted); opacity: 0.6;">shopping_bag</span>
+                    <h3>Nenhum pedido encontrado</h3>
+                    <p>Você ainda não realizou pedidos com este WhatsApp. Monte sua pizza e aproveite!</p>
+                    <button type="button" class="btn btn-primary" onclick="closeCustomerOrdersModal()" style="margin-top: 14px;">
+                        Ver Cardápio 🍕
+                    </button>
+                </div>
+
+                <div id="customerOrdersList" class="orders-history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Minha Conta -->
+    <div class="modal-overlay" id="customerAccountModal">
+        <div class="modal-card customer-account-card">
+            <div class="checkout-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-rounded" style="color: var(--primary); font-size: 24px;">account_circle</span>
+                    <h2>Minha Conta</h2>
+                </div>
+                <button class="btn-close-circle" onclick="closeCustomerAccountModal()">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+
+            <div class="customer-account-body">
+                <div class="account-avatar-wrapper">
+                    <div class="account-avatar-icon" id="accountAvatarLetter">C</div>
+                    <div class="account-avatar-info">
+                        <h3 id="accountDisplayName">Cliente</h3>
+                        <span class="account-phone-badge" id="accountDisplayPhone">(00) 00000-0000</span>
+                    </div>
+                </div>
+
+                <div class="account-section">
+                    <label for="accountNameInput" class="account-label">Editar Nome</label>
+                    <div class="account-input-group">
+                        <input type="text" id="accountNameInput" class="auth-input" placeholder="Seu nome" maxlength="50">
+                        <button type="button" class="btn btn-primary btn-save-name" onclick="saveCustomerAccountName()">
+                            <span>Salvar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="account-actions-list">
+                    <button type="button" class="account-menu-item" onclick="openCustomerOrdersModalFromAccount()">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="material-symbols-rounded" style="color: var(--primary);">receipt_long</span>
+                            <span>Consultar Meus Pedidos</span>
+                        </div>
+                        <span class="material-symbols-rounded" style="color: var(--text-muted);">chevron_right</span>
+                    </button>
+
+                    <button type="button" class="account-menu-item logout-item" onclick="handleCustomerLogout()">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="material-symbols-rounded" style="color: var(--status-red, #ff4757);">logout</span>
+                            <span>Sair / Trocar de Número</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
-
-    <!-- Update Banner -->
-    <div id="updateBanner" class="update-banner display-none">
-        <span>Nova versão disponível!</span>
-        <button onclick="applyAppUpdate()">Atualizar agora</button>
-    </div>
 
     <!-- Global Loading Overlay -->
     <div id="globalLoading" class="global-loading-overlay display-none">
@@ -528,8 +1018,94 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <!-- Firebase Config -->
     <script src="firebase-config.js"></script>
+    <script src="TenantContext.js?v=2.7.0"></script>
+
+    <!-- Marketing Tracking Module -->
+    <script src="TrackingService.js?v=2.7.0"></script>
+
+    <!-- Pizza Engine Core Logic -->
+    <script src="PizzaEngine.js?v=3"></script>
+
+    <!-- WhatsApp Customer Auth Module -->
+    <script src="CustomerAuth.js?v=2.7.0"></script>
 
     <!-- Core App Logic -->
-    <script src="app.js?v=5"></script>
+    <script src="app.js?v=2.7.0"></script>
+
+    <!-- Modais Dedicados ao Modo Autoatendimento / Totem -->
+    <!-- Modal 1: Inatividade ("Você ainda está aí?") -->
+    <div id="totemInactivityModal" class="totem-inactivity-modal" role="dialog" aria-modal="true" aria-label="Aviso de inatividade">
+        <div class="totem-inactivity-card">
+            <span class="material-symbols-rounded totem-inactivity-icon">timer</span>
+            <h2 class="totem-inactivity-title">Você ainda está aí?</h2>
+            <p class="totem-inactivity-msg">Para garantir a sua privacidade e liberar o atendimento, esta tela será reiniciada em breve.</p>
+            <div class="totem-countdown-circle" id="totemInactivityCountdown">15</div>
+            <div class="totem-inactivity-actions">
+                <button type="button" class="btn-totem-continue" onclick="TotemManager.resetInactivityTimer()">
+                    <span class="material-symbols-rounded">touch_app</span>
+                    <span>CONTINUAR PEDIDO</span>
+                </button>
+                <button type="button" class="btn-totem-cancel-inactivity" onclick="TotemManager.resetTotemSession(true)">
+                    <span>CANCELAR E VOLTAR AO INÍCIO</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Confirmação de Cancelamento ao tocar em Voltar ao Início -->
+    <div id="totemConfirmModal" class="totem-confirm-modal" role="dialog" aria-modal="true" aria-label="Confirmar cancelamento">
+        <div class="totem-confirm-card">
+            <h3 class="totem-confirm-title">Deseja cancelar este pedido?</h3>
+            <p class="totem-confirm-desc">Se você voltar ao início agora, os itens adicionados ao seu carrinho serão cancelados.</p>
+            <div class="totem-confirm-actions">
+                <button type="button" class="btn-totem-confirm-leave" onclick="TotemManager.confirmCancelOrder()">
+                    SIM, CANCELAR
+                </button>
+                <button type="button" class="btn-totem-confirm-stay" onclick="TotemManager.cancelCancelOrder()">
+                    CONTINUAR PEDINDO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Confirmação de Sucesso do Pedido & Senha -->
+    <div id="totemSuccessModal" class="totem-success-modal" role="dialog" aria-modal="true" aria-label="Pedido realizado com sucesso">
+        <div class="totem-success-box">
+            <div class="totem-success-badge-icon">
+                <span class="material-symbols-rounded">check</span>
+            </div>
+            <h2 class="totem-success-title">PEDIDO REALIZADO! 🎉</h2>
+            <p class="totem-success-subtitle">Obrigado por pedir na Fina Massa Pizzaria! 🍕</p>
+
+            <div class="totem-order-ticket">
+                <div class="totem-order-number-label">SENHA / PEDIDO Nº</div>
+                <div class="totem-order-number-val" id="totemSuccessOrderNumber">#0000</div>
+                <div class="totem-order-meta" id="totemSuccessMeta">Retirada no Balcão</div>
+            </div>
+
+            <p style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 24px; line-height: 1.5;">
+                Seu pedido foi enviado diretamente para a nossa cozinha. Guarde sua senha e aguarde a chamada no painel ou balcão.
+            </p>
+
+            <div class="totem-success-auto-return">
+                Retornando ao início em <strong id="totemSuccessCountdown">9</strong> segundos...
+            </div>
+
+            <button type="button" class="btn-totem-finish-now" onclick="TotemManager.finishOrderImmediately()">
+                <span>NOVO PEDIDO / CONCLUIR</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Totem / Autoatendimento Logic -->
+    <script src="totem.js?v=1"></script>
+
+    <!-- Floating Presentation Theme Button -->
+    <button type="button" class="jc-floating-theme-btn" onclick="ThemeManager.toggle()" title="Studio de Cores (Apresentação Comercial)" aria-label="Mudar Cores da Demonstração">
+        <i class="fas fa-palette"></i>
+    </button>
+
+    <!-- Theme & Palette Manager (Studio de Cores) -->
+    <script src="ThemeManager.js?v=1"></script>
 </body>
 </html>

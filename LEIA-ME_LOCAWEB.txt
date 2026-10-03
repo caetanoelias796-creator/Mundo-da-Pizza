@@ -1,0 +1,91 @@
+================================================================================
+          JC FOOD - GUIA DE INSTALACAO E PUBLICACAO NA LOCAWEB
+================================================================================
+
+Este pacote contem todos os arquivos do sistema JC Food 100% prontos, revisados
+e otimizados para publicacao na hospedagem da Locaweb (ou qualquer hospedagem
+Apache/cPanel/Linux), com PWA, conexao segura HTTPS, Firebase e cache inteligente.
+
+--------------------------------------------------------------------------------
+1. ESTRUTURA DO SISTEMA
+--------------------------------------------------------------------------------
+- /                      -> Cardapio Digital & Delivery Oficial (index.html)
+- /painel/               -> Painel do Restaurante / Gestor Kanban / Cardapio
+- /garcom/               -> Modulo de Atendimento / Mesas / Comanda Mobile
+- /assets/               -> Fotos dos produtos, logos e icones
+- /fonts/                -> Fontes oficiais (Sora e Basement Grotesque)
+- /pwa/                  -> Gerenciador PWA (instalacao e atualizacao)
+- .htaccess              -> Configuracoes de servidor Apache / Locaweb (UTF-8, SSL, GZIP)
+- menu.json              -> Catalogo de produtos local e estrutura de backup
+
+--------------------------------------------------------------------------------
+2. COMO PUBLICAR NA LOCAWEB (VIA PAINEL / CPANEL)
+--------------------------------------------------------------------------------
+Passo 1:
+- Acesse a Central do Cliente Locaweb: https://paineldehospedagem.locaweb.com.br
+- Entre na administracao da sua Hospedagem / Painel cPanel.
+
+Passo 2:
+- Clique em "Gerenciador de Arquivos" (File Manager).
+- Acesse a pasta onde o site vai rodar:
+  * Dominio principal: pasta "public_html"
+  * Subpasta/Subdominio (ex: jcinformatica.net.br/cardapio): crie a pasta desejada.
+- IMPORTANTE (Substituicao de versao antiga como Mundo da Pizza):
+  * Se a hospedagem ainda contem os arquivos antigos (ex: index.html, painel.html, 
+    app.js, painel.js, assets antigos do Mundo da Pizza):
+  * Selecione e delete os arquivos antigos da pasta public_html (ou mova para uma 
+    pasta de backup) para nao haver conflito entre arquivos antigos e novos.
+
+Passo 3:
+- Clique no botao "Enviar" (Upload).
+- Selecione o arquivo atualizado: "JC_Food.zip".
+
+Passo 4:
+- Apos o envio concluir, clique com o botao direito no arquivo "JC_Food.zip" e 
+  selecione "Extrair" (Extract).
+- Extraia os arquivos diretamente dentro de public_html (ou da pasta escolhida).
+- Pronto! Voce ja pode apagar o .zip da hospedagem.
+
+--------------------------------------------------------------------------------
+3. COMO PUBLICAR VIA FTP (FILEZILLA / WINSCP) - OPCAO ALTERNATIVA
+--------------------------------------------------------------------------------
+- Conecte ao seu FTP com os dados de acesso fornecidos pela Locaweb.
+- Abra a pasta "public_html" no lado do servidor.
+- Descompacte o arquivo "JC_Food.zip" no seu computador.
+- Envie todas as pastas e arquivos para dentro de "public_html".
+
+--------------------------------------------------------------------------------
+4. LINKS DE ACESSO DO SISTEMA NO AR
+--------------------------------------------------------------------------------
+- Cardapio Digital & Delivery:
+  https://seudominio.com.br/
+
+- Painel Gestor / Restaurante:
+  https://seudominio.com.br/painel/
+
+- Modulo do Garcom / Salão:
+  https://seudominio.com.br/garcom/
+
+--------------------------------------------------------------------------------
+5. DIFERENCIAIS E OTIMIZACOES APLICADAS
+--------------------------------------------------------------------------------
+✔ Arquivo .htaccess Otimizado:
+  * Forca conexao HTTPS/SSL obrigatoria para instalacao PWA e seguranca.
+  * Charset UTF-8 automatico (evita problemas de acentuacao em qualquer navegador).
+  * MIME types corretos (.json, .webmanifest, .webp, .woff2).
+  * Compressao GZIP / Deflate ativada (carregamento ultra rapido).
+  * Cache estrito de Service Worker (atualizacoes chegam instantaneamente).
+
+✔ Banco de Dados em Tempo Real (Firebase):
+  * Projeto: jc-food-dev
+  * Sincronizacao de pedidos, status da loja e cardapio em tempo real.
+  * Totalmente isolado para demonstracoes da JC Informatica.
+
+✔ PWA (Progressive Web App):
+  * Permite que clientes e garcons instalem o app direto no celular (Android e iOS)
+    sem precisar de Google Play ou App Store.
+
+✔ Seletor de Cores e Nichos (Theme Studio):
+  * Permite alternar ao vivo entre nichos (Pizzaria, Hamburgueria, Sushi, etc.)
+    ou aplicar as cores institucionais da JC Informatica.
+================================================================================
