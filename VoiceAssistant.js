@@ -8,11 +8,12 @@
  * 1. Captura e Reconhecimento de Fala (Web Speech API em pt-BR com fallback de texto)
  * 2. Síntese de Voz (SpeechSynthesis em pt-BR com controle de interrupção)
  * 3. NLU / Interpretação de Intenções e Entidades em Português Brasileiro
- * 4. Máquina de Estados Conversacional Inteligente (sabores, tamanhos, bordas, bebidas)
- * 5. Integração com o Catálogo Real (sharedOptionGroups, menu_items) e Isolamento Multiempresa
- * 6. Integração com o Motor Oficial de Pizzas (PizzaEngine.js)
- * 7. Integração Oficial com o Carrinho e Checkout (app.js)
- * 8. Segurança estrita (sem chamadas arbitrárias ao banco, validação de preços)
+ * 4. Suporte Completo a Todo o Cardápio (Pizzas, Hambúrgueres/Lanches, Calzones, Bebidas)
+ * 5. Máquina de Estados Conversacional Inteligente com Guias de Opções
+ * 6. Integração com o Catálogo Real (sharedOptionGroups, menu_items) e Isolamento Multiempresa
+ * 7. Integração com o Motor Oficial de Pizzas (PizzaEngine.js)
+ * 8. Integração Oficial com o Carrinho e Checkout (app.js)
+ * 9. Segurança estrita (sem chamadas arbitrárias ao banco, validação de preços)
  * ==============================================================================
  */
 
@@ -38,7 +39,7 @@
     }
 
     const VoiceAssistant = {
-        version: '1.1.0',
+        version: '1.2.0',
         activeTenant: null,
         isOpen: false,
         isListening: false,
@@ -49,7 +50,7 @@
         
         // Estado Conversacional da Sessão
         conversationState: {
-            step: 'IDLE', // IDLE, GREETING, BUILDING_PIZZA_SIZE, BUILDING_PIZZA_FLAVORS, ASKING_BORDER, ASKING_BEVERAGE, CONFIRM_ADD, REVIEW_CART
+            step: 'IDLE', // IDLE, GREETING, CHOOSING_BURGER, CHOOSING_CALZONE, BUILDING_PIZZA_SIZE, BUILDING_PIZZA_FLAVORS, ASKING_BORDER, ASKING_BEVERAGE, REVIEW_CART
             pendingPizza: {
                 sizeId: null,
                 sizeObj: null,
@@ -65,7 +66,7 @@
         settings: {
             enabled: true,
             assistantName: 'Assistente JC',
-            greeting: 'Olá! Sou o assistente de voz do JC Food. Posso anotar seu pedido! O que você gostaria de pedir hoje?',
+            greeting: 'Olá! Sou o assistente de voz do JC Food. Posso anotar seu pedido! Temos pizzas, hambúrgueres com fritas, calzones e bebidas. O que você gostaria de pedir hoje?',
             voiceRate: 1.05,
             voicePitch: 1.0,
             autoListen: true
@@ -114,7 +115,7 @@
 
                 this.settings.enabled = vConf.enabled !== false;
                 this.settings.assistantName = vConf.assistantName || 'Assistente JC';
-                this.settings.greeting = (vConf.greeting || 'Olá! Sou o assistente de voz do {companyName}. Posso anotar seu pedido! O que você gostaria de pedir hoje?')
+                this.settings.greeting = (vConf.greeting || 'Olá! Sou o assistente de voz do {companyName}. Posso anotar seu pedido! Temos pizzas, hambúrgueres com fritas, calzones e bebidas. O que você gostaria de pedir hoje?')
                     .replace('{companyName}', compName);
                 this.settings.voiceRate = parseFloat(vConf.voiceRate) || 1.05;
                 this.settings.voicePitch = parseFloat(vConf.voicePitch) || 1.0;
@@ -318,7 +319,7 @@
             }
 
             if (this.conversationState.history.length === 0) {
-                this.addBotMessage(this.settings.greeting);
+                this.addBotMessage(this.settings.greeting, null, ['Quero um Hambúrguer', 'Quero uma Pizza', 'Ver Calzones', 'Ver Cardápio']);
                 this.speak(this.settings.greeting);
             } else {
                 this.updateUIStatus('Toque no microfone para falar', 'idle');
@@ -440,7 +441,7 @@
                     <div class="voice-item-card">
                         <div class="voice-item-card-title">
                             <span>${this.escapeHTML(itemCardData.title)}</span>
-                            <span class="material-symbols-rounded" style="color: var(--primary); font-size: 18px;">local_pizza</span>
+                            <span class="material-symbols-rounded" style="color: var(--primary); font-size: 18px;">${itemCardData.icon || 'fastfood'}</span>
                         </div>
                         <div class="voice-item-card-desc">${this.escapeHTML(itemCardData.desc || '')}</div>
                         <div class="voice-item-card-price">${itemCardData.priceFormatted || ''}</div>
@@ -523,6 +524,14 @@
 
             // 4. Fluxo guiado baseado no estado atual da máquina de conversação
             switch (this.conversationState.step) {
+                case 'CHOOSING_BURGER':
+                    this.handleStepChoosingBurger(norm, text);
+                    return;
+
+                case 'CHOOSING_CALZONE':
+                    this.handleStepChoosingCalzone(norm, text);
+                    return;
+
                 case 'BUILDING_PIZZA_SIZE':
                     this.handleStepPizzaSize(norm, text);
                     return;
@@ -540,58 +549,373 @@
                     return;
             }
 
-            // 5. NLU Geral: Detecta se é pedido de pizza, sabor, bebida, produto geral ou consulta
+            // 5. NLU Geral: Detecta com prioridade hambúrgueres, calzones, pizzas, bebidas e consultas
             this.interpretGeneralIntent(norm, text);
         },
 
         /**
-         * Interpretador Geral de Intenções (NLU)
+         * Interpretador Geral de Intenções (NLU com Priorização de Categorias)
          */
         interpretGeneralIntent: function (norm, text) {
             const catalog = this.getCatalogData();
 
-            // Identifica se mencionou tamanho, sabores conhecidos, bebidas ou produtos
-            const identifiedSize = this.detectSizeInText(norm, catalog);
-            const identifiedFlavors = this.detectFlavorsInText(norm, catalog);
-            const identifiedBeverages = this.detectBeveragesInText(norm, catalog);
-            const identifiedProducts = this.detectGeneralProductsInText(norm, catalog);
-
-            // CASO A: Pedido de Pizza ou Sabor identificado (Ex: "quero calabresa", "uma pizza grande", "pizza de 4 queijos")
-            if (norm.includes('pizza') || identifiedFlavors.length > 0 || (identifiedSize && !identifiedBeverages.length)) {
-                this.startPizzaOrderFlow(identifiedSize, identifiedFlavors, norm);
+            // =========================================================================
+            // PRIORIDADE 1: HAMBÚRGUERES & LANCHES
+            // Se o usuário falou hambúrguer, burguer, lanche, sanduíche, x-frango, etc.
+            // =========================================================================
+            const isBurgerQuery = norm.includes('hamburguer') || norm.includes('burguer') || norm.includes('burger') || norm.includes('lanche') || norm.includes('sanduiche') || norm.includes('x frango') || norm.includes('x-frango');
+            
+            if (isBurgerQuery) {
+                const detectedBurgers = this.detectBurgersInText(norm, catalog);
+                if (detectedBurgers.length > 0) {
+                    this.addGeneralProductsToCart(detectedBurgers);
+                    return;
+                }
+                // Se não especificou o hambúrguer, apresenta as opções de lanche
+                this.handleBurgerInquiry(norm);
                 return;
             }
 
-            // CASO B: Pedido de Bebida
+            // =========================================================================
+            // PRIORIDADE 2: CALZONES
+            // Se o usuário falou calzone, calzones, calzone de costela, etc.
+            // =========================================================================
+            const isCalzoneQuery = norm.includes('calzone') || norm.includes('calzones');
+            if (isCalzoneQuery) {
+                const detectedCalzones = this.detectCalzonesInText(norm, catalog);
+                if (detectedCalzones.length > 0) {
+                    this.addGeneralProductsToCart(detectedCalzones);
+                    return;
+                }
+                // Se não especificou o sabor de calzone, apresenta os calzones
+                this.handleCalzoneInquiry(norm);
+                return;
+            }
+
+            // =========================================================================
+            // PRIORIDADE 3: BEBIDAS
+            // Se o usuário pediu bebidas específicas ou consultou opções para beber
+            // =========================================================================
+            const identifiedBeverages = this.detectBeveragesInText(norm, catalog);
             if (identifiedBeverages.length > 0) {
                 this.addBeveragesToCart(identifiedBeverages);
                 return;
             }
+            if (norm.includes('bebida') || norm.includes('refrigerante') || norm.includes('cerveja') || norm.includes('suco') || norm.includes('o que tem pra beber') || norm.includes('o que tem de beber')) {
+                this.handleBeverageInquiry(norm);
+                return;
+            }
 
-            // CASO C: Pedido de Outro Produto (Hambúrguer, Calzone, etc.)
+            // =========================================================================
+            // PRIORIDADE 4: PRODUTOS GERAIS
+            // =========================================================================
+            const identifiedProducts = this.detectGeneralProductsInText(norm, catalog);
             if (identifiedProducts.length > 0) {
                 this.addGeneralProductsToCart(identifiedProducts);
                 return;
             }
 
-            // CASO D: Consulta de Cardápio / Ajuda / Sabores
-            if (norm.includes('cardapio') || norm.includes('sabores') || norm.includes('quais') || norm.includes('opcoes') || norm.includes('ajuda')) {
+            // =========================================================================
+            // PRIORIDADE 5: PIZZAS (SABORES OU TAMANHOS)
+            // =========================================================================
+            const identifiedSize = this.detectSizeInText(norm, catalog);
+            const identifiedFlavors = this.detectFlavorsInText(norm, catalog);
+
+            if (norm.includes('pizza') || identifiedFlavors.length > 0 || (identifiedSize && !identifiedBeverages.length)) {
+                this.startPizzaOrderFlow(identifiedSize, identifiedFlavors, norm);
+                return;
+            }
+
+            // =========================================================================
+            // PRIORIDADE 6: CONSULTA GERAL DE CARDÁPIO / AJUDA
+            // =========================================================================
+            if (norm.includes('cardapio') || norm.includes('sabores') || norm.includes('quais') || norm.includes('opcoes') || norm.includes('opcao') || norm.includes('o que tem') || norm.includes('o que voces tem') || norm.includes('menu') || norm.includes('ajuda')) {
                 this.handleMenuInquiry(norm);
                 return;
             }
 
-            // CASO E: Saudações
+            // =========================================================================
+            // PRIORIDADE 7: SAUDAÇÕES
+            // =========================================================================
             if (norm.match(/^(oi|ola|bom dia|boa tarde|boa noite|opa|e ai)/)) {
-                const reply = `Olá! Tudo bem? O que você gostaria de pedir hoje? Temos pizzas artesanais, lanches, calzones e bebidas geladas!`;
-                this.addBotMessage(reply, null, ['Quero uma Pizza Grande', 'Ver Bebidas', 'Quais os Sabores?']);
+                const reply = `Olá! Tudo bem? O que você gostaria de pedir hoje? Temos deliciosos hambúrgueres com fritas, pizzas artesanais, calzones recheados e bebidas geladas!`;
+                this.addBotMessage(reply, null, ['Quero um Hambúrguer', 'Quero uma Pizza', 'Ver Calzones', 'Ver Cardápio']);
                 this.speak(reply);
                 return;
             }
 
             // Fallback amigável
-            const fallbackReply = `Não entendi completamente o que deseja. Você pode dizer, por exemplo: *"Quero uma pizza grande de calabresa"* ou *"Adicione uma Coca-Cola 2 litros"*!`;
-            this.addBotMessage(fallbackReply, null, ['Pizza Grande Calabresa', 'Pizza Média 2 Sabores', 'Coca-Cola 2L', 'Ver Carrinho']);
-            this.speak(fallbackReply);
+            const fallbackReply = `Não entendi completamente o que deseja. Você pode dizer, por exemplo:\n• *"Quero um Burguer Tradicional"*\n• *"Quero uma pizza grande de calabresa"*\n• *"Quais as opções de lanches?"*\n• *"Adicione uma Coca-Cola 2 litros"*`;
+            this.addBotMessage(fallbackReply, null, ['Burguer Tradicional', 'Pizza Calabresa', 'Opções de Lanche', 'Ver Carrinho']);
+            this.speak(`Não entendi. Você pode pedir um hambúrguer, uma pizza, um calzone ou uma bebida! O que você prefere?`);
+        },
+
+        /* ==========================================================================
+           MÓDULO DE HAMBÚRGUERES & LANCHES
+           ========================================================================== */
+
+        /**
+         * Apresenta as opções completas de Hambúrgueres e Lanches do cardápio
+         */
+        handleBurgerInquiry: function (norm) {
+            const catalog = this.getCatalogData();
+            const burgers = catalog.menu_items?.hamburgueres || [];
+            const arr = Array.isArray(burgers) ? burgers : Object.values(burgers);
+
+            this.conversationState.step = 'CHOOSING_BURGER';
+
+            if (arr.length === 0) {
+                const reply = `No momento não temos hambúrgueres disponíveis. Que tal uma deliciosa pizza ou calzone?`;
+                this.addBotMessage(reply, null, ['Ver Pizzas', 'Ver Calzones']);
+                this.speak(reply);
+                return;
+            }
+
+            let msg = `Temos opções incríveis de hambúrgueres e lanches artesanais:\n\n`;
+            const chips = [];
+
+            arr.forEach(b => {
+                const priceStr = formatMoney(b.price || b.basePrice || 0);
+                const desc = b.description ? ` - ${b.description}` : '';
+                msg += `🍔 **${b.name} (${priceStr})**${desc}\n\n`;
+                chips.push(b.name);
+            });
+
+            msg += `Qual deles você gostaria de pedir?`;
+            chips.push('Ver Bebidas');
+            chips.push('Ver Pizzas');
+
+            this.addBotMessage(msg, null, chips);
+            this.speak(`Temos o Burguer Tradicional com batata frita por 28 reais, e o X-Frango completo por 26 reais. Qual você prefere?`);
+        },
+
+        /**
+         * Processa a escolha do cliente quando o bot perguntou qual hambúrguer ele prefere
+         */
+        handleStepChoosingBurger: function (norm, text) {
+            const catalog = this.getCatalogData();
+            const detectedBurgers = this.detectBurgersInText(norm, catalog);
+
+            if (detectedBurgers.length > 0) {
+                this.conversationState.step = 'IDLE';
+                this.addGeneralProductsToCart(detectedBurgers);
+                return;
+            }
+
+            if (norm.includes('tradicional') || norm.includes('primeiro') || norm.includes('com fritas')) {
+                const b = (catalog.menu_items?.hamburgueres || []).find(item => item.id === 'burguer_tradicional') || {
+                    id: 'burguer_tradicional',
+                    name: 'Burguer Tradicional',
+                    price: 28,
+                    category: 'hamburgueres',
+                    description: 'Acompanha 100g de batata frita'
+                };
+                this.conversationState.step = 'IDLE';
+                this.addGeneralProductsToCart([{ ...b, quantity: 1 }]);
+                return;
+            }
+
+            if (norm.includes('frango') || norm.includes('segundo') || norm.includes('x frango')) {
+                const b = (catalog.menu_items?.hamburgueres || []).find(item => item.id === 'x_frango') || {
+                    id: 'x_frango',
+                    name: 'X-Frango',
+                    price: 26,
+                    category: 'hamburgueres',
+                    description: 'Lanche completo de frango'
+                };
+                this.conversationState.step = 'IDLE';
+                this.addGeneralProductsToCart([{ ...b, quantity: 1 }]);
+                return;
+            }
+
+            // Se mudou de ideia
+            if (norm.includes('pizza') || norm.includes('calzone') || norm.includes('nao quero') || norm.includes('cancela')) {
+                this.conversationState.step = 'IDLE';
+                this.interpretGeneralIntent(norm, text);
+                return;
+            }
+
+            const reply = `Não entendi qual hambúrguer você prefere. Escolha entre o **Burguer Tradicional** ou o **X-Frango**:`;
+            this.addBotMessage(reply, null, ['Burguer Tradicional', 'X-Frango', 'Ver Pizzas']);
+            this.speak(`Você prefere o Burguer Tradicional ou o X-Frango?`);
+        },
+
+        /**
+         * Detecta itens de hambúrguer no texto falado
+         */
+        detectBurgersInText: function (norm, catalog) {
+            const burgers = catalog.menu_items?.hamburgueres || [];
+            const arr = Array.isArray(burgers) ? burgers : Object.values(burgers);
+            const matched = [];
+
+            arr.forEach(item => {
+                const iNorm = normalizeText(item.name);
+                const id = item.id;
+                let isMatch = false;
+
+                if (id === 'burguer_tradicional') {
+                    isMatch = norm.includes('burguer tradicional') || 
+                              norm.includes('hamburguer tradicional') || 
+                              norm.includes('burger tradicional') || 
+                              norm.includes('burguer com fritas') || 
+                              norm.includes('hamburguer com fritas') ||
+                              ((norm.includes('hamburguer') || norm.includes('burguer') || norm.includes('lanche')) && (norm.includes('tradicional') || norm.includes('fritas') || norm.includes('cheddar') || norm.includes('140g')));
+                } else if (id === 'x_frango') {
+                    isMatch = norm.includes('x frango') || 
+                              norm.includes('x-frango') || 
+                              norm.includes('xfrango') || 
+                              norm.includes('hamburguer de frango') || 
+                              norm.includes('lanche de frango') || 
+                              norm.includes('burguer de frango') ||
+                              ((norm.includes('hamburguer') || norm.includes('burguer') || norm.includes('lanche')) && norm.includes('frango'));
+                } else {
+                    isMatch = norm.includes(iNorm) || (id && norm.includes(normalizeText(id.replace(/_/g, ' '))));
+                }
+
+                if (isMatch && !matched.some(m => m.id === item.id)) {
+                    const qty = this.extractQuantityInText(norm) || 1;
+                    matched.push({ ...item, quantity: qty, category: 'hamburgueres' });
+                }
+            });
+
+            return matched;
+        },
+
+        /* ==========================================================================
+           MÓDULO DE CALZONES
+           ========================================================================== */
+
+        /**
+         * Apresenta as opções de calzones
+         */
+        handleCalzoneInquiry: function (norm) {
+            const catalog = this.getCatalogData();
+            const calzones = catalog.menu_items?.calzones || [];
+            const arr = Array.isArray(calzones) ? calzones : Object.values(calzones);
+
+            this.conversationState.step = 'CHOOSING_CALZONE';
+
+            if (arr.length === 0) {
+                const reply = `No momento não temos calzones cadastrados. Que tal uma pizza ou hambúrguer?`;
+                this.addBotMessage(reply, null, ['Ver Pizzas', 'Ver Hambúrgueres']);
+                this.speak(reply);
+                return;
+            }
+
+            let msg = `Nossos calzones são assados na hora e super recheados! Temos opções salgadas e doces:\n\n`;
+            const salgados = arr.filter(c => !c.id.includes('choco'));
+            const doces = arr.filter(c => c.id.includes('choco'));
+
+            if (salgados.length > 0) {
+                msg += `🥟 **Salgados:**\n`;
+                salgados.forEach(c => {
+                    msg += `• **${c.name}** (${formatMoney(c.price || c.basePrice)})\n`;
+                });
+                msg += `\n`;
+            }
+
+            if (doces.length > 0) {
+                msg += `🍫 **Doces:**\n`;
+                doces.forEach(c => {
+                    msg += `• **${c.name}** (${formatMoney(c.price || c.basePrice)})\n`;
+                });
+                msg += `\n`;
+            }
+
+            msg += `Qual sabor de calzone você gostaria?`;
+            const topChips = salgados.slice(0, 3).map(c => c.name).concat(doces.slice(0, 1).map(c => c.name));
+
+            this.addBotMessage(msg, null, topChips);
+            this.speak(`Temos calzones de costela, filé com cheddar, frango, bacon, quatro queijos e opções doces de chocolate! Qual sabor você prefere?`);
+        },
+
+        /**
+         * Processa a escolha do cliente para Calzones
+         */
+        handleStepChoosingCalzone: function (norm, text) {
+            const catalog = this.getCatalogData();
+            const detectedCalzones = this.detectCalzonesInText(norm, catalog);
+
+            if (detectedCalzones.length > 0) {
+                this.conversationState.step = 'IDLE';
+                this.addGeneralProductsToCart(detectedCalzones);
+                return;
+            }
+
+            if (norm.includes('pizza') || norm.includes('hamburguer') || norm.includes('cancela')) {
+                this.conversationState.step = 'IDLE';
+                this.interpretGeneralIntent(norm, text);
+                return;
+            }
+
+            const reply = `Não reconheci esse sabor de calzone. Temos: Frango, Costela, Filé com Cheddar, Bacon, 4 Queijos ou Chocolate:`;
+            this.addBotMessage(reply, null, ['Calzone Costela', 'Calzone Frango', 'Calzone Filé c/ Cheddar']);
+            this.speak(`Por favor, escolha um dos nossos sabores de calzone: Costela, Frango, Filé com Cheddar ou 4 Queijos.`);
+        },
+
+        /**
+         * Detecta itens de calzone no texto falado
+         */
+        detectCalzonesInText: function (norm, catalog) {
+            const calzones = catalog.menu_items?.calzones || [];
+            const arr = Array.isArray(calzones) ? calzones : Object.values(calzones);
+            const matched = [];
+
+            arr.forEach(item => {
+                const iNorm = normalizeText(item.name);
+                const id = item.id;
+                let isMatch = false;
+
+                if (norm.includes(iNorm)) {
+                    isMatch = true;
+                } else if (norm.includes('calzone') || norm.includes('calzones')) {
+                    if (id.includes('costela') && norm.includes('costela')) isMatch = true;
+                    if (id.includes('file_cheddar') && (norm.includes('file') || norm.includes('cheddar'))) isMatch = true;
+                    if (id.includes('frango') && norm.includes('frango')) isMatch = true;
+                    if (id.includes('bacon') && norm.includes('bacon')) isMatch = true;
+                    if (id.includes('quatro_queijos') && (norm.includes('4 queijos') || norm.includes('quatro queijos') || norm.includes('queijo'))) isMatch = true;
+                    if (id.includes('choco_branco') && (norm.includes('chocolate branco') || norm.includes('branco'))) isMatch = true;
+                    if (id.includes('choco_preto') && (norm.includes('chocolate preto') || norm.includes('preto') || norm.includes('chocolate'))) isMatch = true;
+                }
+
+                if (isMatch && !matched.some(m => m.id === item.id)) {
+                    const qty = this.extractQuantityInText(norm) || 1;
+                    matched.push({ ...item, quantity: qty, category: 'calzones' });
+                }
+            });
+
+            return matched;
+        },
+
+        /* ==========================================================================
+           MÓDULO DE BEBIDAS
+           ========================================================================== */
+
+        /**
+         * Apresenta as opções de bebidas disponíveis
+         */
+        handleBeverageInquiry: function (norm) {
+            const catalog = this.getCatalogData();
+            const drinks = catalog.menu_items?.bebidas || [];
+            const arr = Array.isArray(drinks) ? drinks : Object.values(drinks);
+
+            if (arr.length === 0) {
+                const reply = `Não encontrei bebidas cadastradas no momento. Que tal um hambúrguer ou uma pizza?`;
+                this.addBotMessage(reply, null, ['Burguer Tradicional', 'Pizza Calabresa']);
+                this.speak(reply);
+                return;
+            }
+
+            let msg = `Temos diversas opções de bebidas bem geladas:\n\n`;
+            arr.slice(0, 8).forEach(d => {
+                msg += `🥤 **${d.name}** (${formatMoney(d.price || d.basePrice)})\n`;
+            });
+
+            msg += `\nQual bebida você deseja adicionar ao seu pedido?`;
+            const topChips = ['Coca-Cola 2L', 'Guaraná 2L', 'Coca Lata', 'Água Mineral'];
+
+            this.addBotMessage(msg, null, topChips);
+            this.speak(`Temos refrigerantes de 2 litros, latinhas geladas, água e sucos! Qual bebida você gostaria?`);
         },
 
         /* ==========================================================================
@@ -886,7 +1210,8 @@
             const cardData = {
                 title: fullTitle,
                 desc: pending.borderObj ? `Com borda recheada de ${borderName}` : 'Borda tradicional sem recheio',
-                priceFormatted: formatMoney(totalPrice)
+                priceFormatted: formatMoney(totalPrice),
+                icon: 'local_pizza'
             };
 
             const confirmReply = `Prontinho! Adicionei ao seu pedido a **${fullTitle}** por **${formatMoney(totalPrice)}**. Gostaria de adicionar alguma bebida gelada para acompanhar?`;
@@ -895,10 +1220,10 @@
         },
 
         /**
-         * Passo de Bebida após a pizza
+         * Passo de Bebida após pizza ou lanche
          */
         handleStepBeverage: function (norm, text) {
-            if (norm.includes('nao') || norm.includes('so isso') || norm.includes('nao precisa') || norm.includes('fechar') || norm.includes('so a pizza')) {
+            if (norm.includes('nao') || norm.includes('so isso') || norm.includes('nao precisa') || norm.includes('fechar') || norm.includes('so isso mesmo') || norm.includes('pode finalizar')) {
                 this.conversationState.step = 'IDLE';
                 this.handleReviewCartIntent();
                 return;
@@ -910,14 +1235,14 @@
             if (drinks.length > 0) {
                 this.addBeveragesToCart(drinks);
             } else {
-                const reply = `Não encontrei essa bebida. Deseja uma Coca-Cola, Guaraná, Cerveja, Suco ou podemos ir para a finalização?`;
+                const reply = `Não encontrei essa bebida. Deseja uma Coca-Cola 2L, Guaraná Lata, Suco ou podemos ir para a finalização?`;
                 this.addBotMessage(reply, null, ['Coca-Cola 2L', 'Guaraná Lata', 'Ver Carrinho', 'Finalizar Pedido']);
                 this.speak(reply);
             }
         },
 
         /* ==========================================================================
-           BEBIDAS E OUTROS PRODUTOS
+           BEBIDAS E PRODUTOS GERAIS (HAMBÚRGUERES, CALZONES, ETC.)
            ========================================================================== */
 
         /**
@@ -925,7 +1250,7 @@
          */
         addBeveragesToCart: function (beverages) {
             beverages.forEach(b => {
-                const unitPrice = Number(b.price || 0);
+                const unitPrice = Number(b.price || b.basePrice || 0);
                 const qty = b.quantity || 1;
                 const totalPrice = unitPrice * qty;
 
@@ -936,6 +1261,7 @@
                     category: 'bebidas',
                     singlePrice: unitPrice,
                     basePrice: unitPrice,
+                    adicionais: [],
                     quantity: qty,
                     totalPrice: totalPrice,
                     notes: 'Pedido por voz'
@@ -945,8 +1271,9 @@
 
                 const cardData = {
                     title: `${qty}x ${b.name}`,
-                    desc: 'Bebida gelada',
-                    priceFormatted: formatMoney(totalPrice)
+                    desc: 'Bebida bem gelada',
+                    priceFormatted: formatMoney(totalPrice),
+                    icon: 'sports_bar'
                 };
 
                 const reply = `Adicionei **${qty}x ${b.name}** ao seu pedido por **${formatMoney(totalPrice)}**!`;
@@ -958,11 +1285,11 @@
         },
 
         /**
-         * Adiciona produtos gerais (hambúrgueres, lanches, porções) ao carrinho
+         * Adiciona produtos gerais (hambúrgueres, lanches, calzones) ao carrinho
          */
         addGeneralProductsToCart: function (products) {
             products.forEach(p => {
-                const unitPrice = Number(p.price || 0);
+                const unitPrice = Number(p.price || p.basePrice || 0);
                 const qty = p.quantity || 1;
                 const totalPrice = unitPrice * qty;
 
@@ -970,9 +1297,10 @@
                     cartItemId: 'voice_prod_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
                     id: p.id,
                     name: p.name,
-                    category: p.category || 'lanches',
+                    category: p.category || 'hamburgueres',
                     singlePrice: unitPrice,
                     basePrice: unitPrice,
+                    adicionais: [],
                     quantity: qty,
                     totalPrice: totalPrice,
                     notes: 'Pedido por voz'
@@ -980,18 +1308,22 @@
 
                 this.pushToOfficialCart(cartItem);
 
+                const isBurger = (p.category === 'hamburgueres') || p.id.includes('burguer') || p.id.includes('x_');
+                const isCalzone = (p.category === 'calzones') || p.id.includes('calzone');
+
                 const cardData = {
                     title: `${qty}x ${p.name}`,
-                    desc: p.description || 'Produto oficial JC Food',
-                    priceFormatted: formatMoney(totalPrice)
+                    desc: p.description || (isBurger ? 'Hambúrguer com batata frita' : 'Calzone assado na hora'),
+                    priceFormatted: formatMoney(totalPrice),
+                    icon: isBurger ? 'lunch_dining' : (isCalzone ? 'bakery_dining' : 'fastfood')
                 };
 
-                const reply = `Adicionei **${qty}x ${p.name}** ao seu pedido por **${formatMoney(totalPrice)}**! Deseja mais alguma coisa ou podemos finalizar?`;
-                this.addBotMessage(reply, cardData, ['Adicionar Bebida', 'Ver Carrinho', 'Finalizar Pedido']);
-                this.speak(reply);
+                const confirmReply = `Adicionei **${qty}x ${p.name}** ao seu pedido por **${formatMoney(totalPrice)}**! Gostaria de uma bebida gelada para acompanhar?`;
+                this.addBotMessage(confirmReply, cardData, ['Coca-Cola 2L', 'Guaraná Lata', 'Água Mineral', 'Finalizar Pedido']);
+                this.speak(`Adicionei ${p.name} por ${formatMoney(totalPrice)}! Deseja uma bebida para acompanhar ou podemos finalizar?`);
             });
 
-            this.conversationState.step = 'IDLE';
+            this.conversationState.step = 'ASKING_BEVERAGE';
         },
 
         /* ==========================================================================
@@ -1028,16 +1360,17 @@
             const currentCart = (typeof window.cart !== 'undefined') ? window.cart : (typeof cart !== 'undefined' ? cart : []);
 
             if (!currentCart || currentCart.length === 0) {
-                const emptyReply = `Seu carrinho está vazio no momento. Que tal escolher uma deliciosa pizza ou um lanche?`;
-                this.addBotMessage(emptyReply, null, ['Pizza Grande', 'Ver Bebidas', 'Quais os Sabores?']);
+                const emptyReply = `Seu carrinho está vazio no momento. Que tal escolher um delicioso hambúrguer, pizza ou calzone?`;
+                this.addBotMessage(emptyReply, null, ['Burguer Tradicional', 'Pizza Calabresa', 'Calzone de Costela', 'Ver Cardápio']);
                 this.speak(emptyReply);
                 return;
             }
 
             let subtotal = 0;
             const itemsList = currentCart.map(item => {
-                subtotal += (item.totalPrice || (item.singlePrice * item.quantity) || 0);
-                return `• ${item.quantity}x ${item.name} (${formatMoney(item.totalPrice || item.singlePrice * item.quantity)})`;
+                const price = item.totalPrice || (item.singlePrice * item.quantity) || 0;
+                subtotal += price;
+                return `• ${item.quantity}x ${item.name} (${formatMoney(price)})`;
             }).join('\n');
 
             const reply = `Aqui está o resumo do seu pedido:\n\n${itemsList}\n\n**Total: ${formatMoney(subtotal)}**.\n\nPodemos ir para a finalização do seu pedido?`;
@@ -1056,7 +1389,7 @@
             if (typeof updateCartUI === 'function') updateCartUI();
 
             const reply = `Seu carrinho foi esvaziado. O que você gostaria de pedir agora?`;
-            this.addBotMessage(reply, null, ['Quero uma Pizza', 'Ver Cardápio']);
+            this.addBotMessage(reply, null, ['Burguer Tradicional', 'Quero uma Pizza', 'Ver Cardápio']);
             this.speak(reply);
             this.updateCartFooterUI();
         },
@@ -1069,7 +1402,7 @@
 
             if (!currentCart || currentCart.length === 0) {
                 const reply = `Seu carrinho ainda está vazio! Adicione algum produto antes de finalizar.`;
-                this.addBotMessage(reply, null, ['Quero uma Pizza Grande', 'Ver Bebidas']);
+                this.addBotMessage(reply, null, ['Burguer Tradicional', 'Pizza Calabresa', 'Ver Bebidas']);
                 this.speak(reply);
                 return;
             }
@@ -1087,24 +1420,32 @@
         },
 
         /**
-         * Consultas de cardápio / sabores
+         * Consultas Gerais de Cardápio (Exibe tudo: Hambúrgueres, Pizzas, Calzones, Bebidas)
          */
         handleMenuInquiry: function (norm) {
-            const catalog = this.getCatalogData();
-            if (norm.includes('bebida') || norm.includes('refrigerante')) {
-                const drinks = (catalog.menu_items?.bebidas || []).slice(0, 5).map(b => b.name);
-                const reply = `Temos opções geladas como: ${drinks.join(', ')} e muito mais! Qual você prefere?`;
-                this.addBotMessage(reply, null, drinks.slice(0, 4));
-                this.speak(reply);
+            // Se o usuário perguntou especificamente sobre hambúrgueres / lanches
+            if (norm.includes('hamburguer') || norm.includes('burguer') || norm.includes('lanche')) {
+                this.handleBurgerInquiry(norm);
                 return;
             }
 
-            // Sabores de pizza
-            const allFlavors = this.getAllFlavorsFromCatalog(catalog);
-            const topFlavors = allFlavors.slice(0, 6).map(f => f.name);
-            const reply = `Nossos sabores mais pedidos são: ${topFlavors.join(', ')}! Você pode pedir no tamanho Média ou Grande com até 3 sabores!`;
-            this.addBotMessage(reply, null, topFlavors.slice(0, 4).map(f => 'Pizza ' + f));
-            this.speak(reply);
+            // Se o usuário perguntou sobre calzones
+            if (norm.includes('calzone')) {
+                this.handleCalzoneInquiry(norm);
+                return;
+            }
+
+            // Se o usuário perguntou sobre bebidas
+            if (norm.includes('bebida') || norm.includes('refrigerante')) {
+                this.handleBeverageInquiry(norm);
+                return;
+            }
+
+            // Cardápio Completo
+            const reply = `Nosso cardápio completo conta com:\n\n🍔 **Hambúrgueres & Lanches:**\n• Burguer Tradicional com 100g de batata frita (R$ 28,00)\n• X-Frango completo (R$ 26,00)\n\n🍕 **Pizzas Artesanais:**\n• Mais de 60 sabores tradicionais e especiais nos tamanhos Média e Grande!\n\n🥟 **Calzones Recheados:**\n• Sabores salgados como Costela, Filé c/ Cheddar e doces de Chocolate!\n\n🥤 **Bebidas Geladas:**\n• Refrigerantes 2L, latas, água mineral, sucos e vinhos!\n\nQual opção você gostaria de pedir agora?`;
+
+            this.addBotMessage(reply, null, ['Ver Hambúrgueres', 'Ver Pizzas', 'Ver Calzones', 'Ver Bebidas']);
+            this.speak(`No nosso cardápio temos hambúrgueres com batata frita, pizzas artesanais, calzones recheados e bebidas bem geladas! Qual opção você prefere?`);
         },
 
         /* ==========================================================================
@@ -1113,7 +1454,6 @@
 
         /**
          * Retorna TODOS os sabores de pizza disponíveis no catálogo
-         * (Extrai tanto de sharedOptionGroups quanto de menu_items e pizza_config)
          */
         getAllFlavorsFromCatalog: function (catalog) {
             const flavors = [];
@@ -1134,7 +1474,7 @@
                 });
             }
 
-            // 1. Extração prioritária: sharedOptionGroups (onde os 60 sabores estão cadastrados no JC Food)
+            // 1. Extração prioritária: sharedOptionGroups
             if (catalog.sharedOptionGroups) {
                 if (Array.isArray(catalog.sharedOptionGroups.saboresTradicionais)) {
                     catalog.sharedOptionGroups.saboresTradicionais.forEach(f => addFlavor(f, 'tradicional'));
@@ -1146,7 +1486,6 @@
                     catalog.sharedOptionGroups.saboresDoces.forEach(f => addFlavor(f, 'doce'));
                 }
 
-                // Varredura de outras listas em sharedOptionGroups
                 Object.keys(catalog.sharedOptionGroups).forEach(key => {
                     if (key !== 'crust' && key !== 'saboresTradicionais' && key !== 'saboresEspeciais' && key !== 'saboresDoces') {
                         const grp = catalog.sharedOptionGroups[key];
@@ -1159,7 +1498,7 @@
                 });
             }
 
-            // 2. Extração de pizza_config.flavors caso exista
+            // 2. Extração de pizza_config.flavors
             if (catalog.pizza_config?.flavors) {
                 const pFlavors = Array.isArray(catalog.pizza_config.flavors) ? catalog.pizza_config.flavors : Object.values(catalog.pizza_config.flavors);
                 pFlavors.forEach(f => addFlavor(f, f.categoryType || 'tradicional'));
@@ -1171,7 +1510,6 @@
                 if (catalog.menu_items && catalog.menu_items[c]) {
                     const arr = Array.isArray(catalog.menu_items[c]) ? catalog.menu_items[c] : Object.values(catalog.menu_items[c]);
                     arr.forEach(item => {
-                        // Se o produto tiver optionGroups com sabores
                         if (item.optionGroups && Array.isArray(item.optionGroups)) {
                             item.optionGroups.forEach(grp => {
                                 if (grp.options && Array.isArray(grp.options)) {
@@ -1179,7 +1517,6 @@
                                 }
                             });
                         }
-                        // Se o próprio item for um sabor (ex: não for tamanho composto)
                         if (item && item.name && !item.name.toLowerCase().includes('pedaços') && !item.name.toLowerCase().includes('pedacos')) {
                             addFlavor(item, c.includes('especial') ? 'especial' : 'tradicional');
                         }
@@ -1187,7 +1524,7 @@
                 }
             });
 
-            // 4. Sabores padrão essenciais caso o catálogo esteja vazio
+            // 4. Sabores padrão essenciais
             if (flavors.length === 0) {
                 const defaults = [
                     { id: 'calabresa', name: 'Calabresa', categoryType: 'tradicional' },
@@ -1196,8 +1533,7 @@
                     { id: 'marguerita', name: 'Marguerita', categoryType: 'tradicional' },
                     { id: 'portuguesa', name: 'Portuguesa', categoryType: 'tradicional' },
                     { id: 'bacon', name: 'Bacon', categoryType: 'tradicional' },
-                    { id: 'alho_e_oleo', name: 'Alho e Óleo', categoryType: 'tradicional' },
-                    { id: 'napolitana', name: 'Napolitana', categoryType: 'tradicional' }
+                    { id: 'alho_e_oleo', name: 'Alho e Óleo', categoryType: 'tradicional' }
                 ];
                 defaults.forEach(d => addFlavor(d, d.categoryType));
             }
@@ -1206,7 +1542,7 @@
         },
 
         /**
-         * Detecta tamanho no texto
+         * Detecta tamanho de pizza no texto
          */
         detectSizeInText: function (input, catalog) {
             const norm = normalizeText(input);
@@ -1234,7 +1570,7 @@
         },
 
         /**
-         * Detecta sabores de pizza no texto com busca profunda
+         * Detecta sabores de pizza no texto
          */
         detectFlavorsInText: function (input, catalog) {
             const norm = normalizeText(input);
@@ -1245,10 +1581,8 @@
                 const fNorm = normalizeText(flavor.name);
                 const idNorm = normalizeText((flavor.id || '').replace(/_/g, ' '));
 
-                // 1. Match exato ou substring direta
                 let isMatch = norm.includes(fNorm) || (idNorm && norm.includes(idNorm));
 
-                // 2. Mapeamento de 4 queijos / quatro queijos
                 if (!isMatch) {
                     if ((fNorm.includes('4 queijos') || idNorm.includes('4 queijos')) && (norm.includes('quatro queijos') || norm.includes('4 queijos'))) {
                         isMatch = true;
@@ -1265,7 +1599,6 @@
                     }
                 }
 
-                // 3. Match inteligente por palavras-chave principais do sabor
                 if (!isMatch) {
                     const stopWords = ['especial', 'tradicional', 'gourmet', 'pizza', 'com', 'ao', 'de', 'do', 'da', 'e', 'a', 'o'];
                     const keywords = fNorm.split(' ').filter(w => w.length >= 4 && !stopWords.includes(w));
@@ -1277,7 +1610,6 @@
                     }
                 }
 
-                // 4. Suporte a termos com e sem acento ou pequenas variações
                 if (!isMatch && this.fuzzyMatchWords(norm, fNorm)) {
                     isMatch = true;
                 }
@@ -1302,7 +1634,6 @@
                 if (norm.includes(bNorm) || (idNorm && norm.includes(idNorm)) || norm.includes('borda de ' + bNorm) || norm.includes('borda ' + bNorm)) {
                     return b;
                 }
-                // Casamento de palavras-chave individuais (ex: catupiry, cheddar, requeijao, chocolate)
                 if (bNorm.includes('catupiry') && norm.includes('catupiry')) return b;
                 if (bNorm.includes('cheddar') && norm.includes('cheddar')) return b;
                 if (bNorm.includes('requeijao') && norm.includes('requeijao')) return b;
@@ -1332,12 +1663,16 @@
                                 (bNorm.includes('agua') && norm.includes('agua')) ||
                                 (bNorm.includes('heineken') && norm.includes('heineken')) ||
                                 (bNorm.includes('chopp') && norm.includes('chopp')) ||
-                                (bNorm.includes('cerveja') && norm.includes('cerveja'));
+                                (bNorm.includes('cerveja') && norm.includes('cerveja')) ||
+                                (bNorm.includes('vinho') && norm.includes('vinho')) ||
+                                (bNorm.includes('elev') && (norm.includes('elev') || norm.includes('energetico')));
 
                 if (isMatch) {
                     let volumeMatched = true;
                     if (bNorm.includes('2l') || bNorm.includes('2 litros')) {
-                        volumeMatched = norm.includes('2l') || norm.includes('2 litros') || norm.includes('dois litros') || !norm.includes('lata');
+                        volumeMatched = norm.includes('2l') || norm.includes('2 litros') || norm.includes('dois litros') || (!norm.includes('lata') && !norm.includes('600'));
+                    } else if (bNorm.includes('600')) {
+                        volumeMatched = norm.includes('600');
                     } else if (bNorm.includes('lata') || bNorm.includes('350')) {
                         volumeMatched = norm.includes('lata') || norm.includes('350');
                     }
@@ -1353,13 +1688,22 @@
         },
 
         /**
-         * Detecta lanches, calzones, hambúrgueres no texto
+         * Detecta outros produtos gerais (calzones, hambúrgueres, porções)
          */
         detectGeneralProductsInText: function (input, catalog) {
             const norm = normalizeText(input);
             const matched = [];
-            const categories = ['hamburgueres', 'burgers', 'calzones', 'porcoes', 'sobremesas'];
 
+            // 1. Testa hambúrgueres
+            const burgers = this.detectBurgersInText(norm, catalog);
+            if (burgers.length > 0) return burgers;
+
+            // 2. Testa calzones
+            const calzones = this.detectCalzonesInText(norm, catalog);
+            if (calzones.length > 0) return calzones;
+
+            // 3. Outras categorias gerais (porções, sobremesas)
+            const categories = ['porcoes', 'sobremesas', 'lanches'];
             categories.forEach(catKey => {
                 const items = catalog.menu_items?.[catKey] || [];
                 const arr = Array.isArray(items) ? items : Object.values(items);
@@ -1379,7 +1723,7 @@
         },
 
         /**
-         * Extrai quantidade numérica (ex: "2 cocas", "duas pizzas")
+         * Extrai quantidade numérica (ex: "2 cocas", "dois hambúrgueres")
          */
         extractQuantityInText: function (norm) {
             if (norm.includes('duas') || norm.includes('dois') || norm.includes(' 2 ')) return 2;
@@ -1438,11 +1782,9 @@
         getAvailableBordersList: function (catalog) {
             const borders = [];
 
-            // 1. Extração do sharedOptionGroups.crust (padrão JC Food)
             if (catalog.sharedOptionGroups?.crust?.options) {
                 catalog.sharedOptionGroups.crust.options.forEach(opt => {
                     if (opt.id !== 'borda_tradicional' && opt.price > 0) {
-                        // Limpa nome para exibição natural (ex: "Massa Tradicional + Borda Catupiry" -> "Catupiry")
                         let displayName = opt.name.replace(/^Massa Tradicional \+ Borda /i, '').replace(/^Borda /i, '').trim();
                         borders.push({
                             id: opt.id,
@@ -1453,7 +1795,6 @@
                 });
             }
 
-            // 2. Extração de pizza_config.borders caso exista
             if (borders.length === 0 && catalog.pizza_config?.borders) {
                 const bordersData = catalog.pizza_config.borders;
                 const arr = Array.isArray(bordersData) ? bordersData : Object.values(bordersData);
@@ -1464,7 +1805,6 @@
                 });
             }
 
-            // Fallbacks padrão caso não haja bordas no catálogo
             if (borders.length === 0) {
                 borders.push(
                     { id: 'borda_requeijao', name: 'Requeijão', price: 17 },
