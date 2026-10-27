@@ -1,8 +1,8 @@
-/**
+﻿/**
  * ============================================================================
  * PizzaEngine.js — Núcleo Central e Universal do Motor de Pizzas
  * ============================================================================
- * Motor oficial de precificação, frações e montagem de pizzas da Fina Massa Pizzaria.
+ * Motor oficial de precificação, frações e montagem de pizzas da JC Food.
  * 
  * RESPONSABILIDADE EXCLUSIVA:
  * - Regras de negócio puras (tamanhos, frações, sabores, bordas, adicionais).
@@ -211,7 +211,7 @@
             const flavorList = Array.isArray(flavors) ? flavors.filter(Boolean) : [];
             const count = Math.min(3, Math.max(1, flavorList.length || 1));
 
-            // Preços padrão vigentes na Fina Massa Pizzaria (conforme cadastro centralizado)
+            // Preços padrão vigentes na JC Food (conforme cadastro centralizado)
             const defaultPrices = {
                 media: {
                     tradicional: { 1: 65.00, 2: 65.00 },

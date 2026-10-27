@@ -1,6 +1,6 @@
-/**
+﻿/**
  * ==============================================================================
- * FINA MASSA PIZZARIA — WHATSAPP SERVICE
+ * JC FOOD — WHATSAPP SERVICE
  * ==============================================================================
  * Camada de serviço centralizada e isolada para mensageria WhatsApp.
  * Suporta integração com a WhatsApp Business Platform / Cloud API oficial (Meta),

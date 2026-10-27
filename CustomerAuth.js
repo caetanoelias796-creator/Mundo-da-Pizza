@@ -1,7 +1,7 @@
-/**
+﻿/**
  * ==============================================================================
  * CustomerAuth.js — Módulo de Identificação e Gestão de Clientes por WhatsApp
- * Fina Massa Pizzaria
+ * JC Food
  * ==============================================================================
  * Responsabilidades:
  * - Normalização e formatação de números de telefone (Brasil/WhatsApp).

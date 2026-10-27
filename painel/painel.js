@@ -1,4 +1,4 @@
-
+﻿
 /* Helper Multi-Tenant Centralizado */
 function dbRef(relativePath) {
     if (typeof TenantContext !== 'undefined' && typeof TenantContext.ref === 'function') {
@@ -5205,10 +5205,22 @@ function renderSettingsDashboard() {
     if (settingsWaApiToken) settingsWaApiToken.value = waCampaigns.apiToken || '';
     if (settingsWaApiVersion) settingsWaApiVersion.value = waCampaigns.apiVersion || 'v21.0';
     if (settingsWaDispatchDelayMs) settingsWaDispatchDelayMs.value = waCampaigns.dispatchDelayMs || 600;
-    if (settingsWaMenuUrl) settingsWaMenuUrl.value = waCampaigns.menuUrl || 'https://pizzariafinamassa.com.br/';
+    if (settingsWaMenuUrl) settingsWaMenuUrl.value = waCampaigns.menuUrl || 'https://jcfood.com.br/';
     if (settingsWaBackendProxyUrl) settingsWaBackendProxyUrl.value = waCampaigns.backendProxyUrl || '';
 
     updateWhatsAppApiUIStatus();
+
+    // Voice Assistant Settings (JC Food Voice Assistant)
+    const voiceSettings = settings.voiceAssistant || {};
+    const settingsVoiceEnabled = document.getElementById('settingsVoiceEnabled');
+    const settingsVoiceName = document.getElementById('settingsVoiceName');
+    const settingsVoiceRate = document.getElementById('settingsVoiceRate');
+    const settingsVoiceGreeting = document.getElementById('settingsVoiceGreeting');
+
+    if (settingsVoiceEnabled) settingsVoiceEnabled.checked = voiceSettings.enabled !== false;
+    if (settingsVoiceName) settingsVoiceName.value = voiceSettings.assistantName || 'Assistente JC';
+    if (settingsVoiceRate) settingsVoiceRate.value = voiceSettings.voiceRate || 1.05;
+    if (settingsVoiceGreeting) settingsVoiceGreeting.value = voiceSettings.greeting || '';
 
     for (let i = 1; i <= 10; i++) {
         const nameElem = document.getElementById(`settingsMotoboy${i}Name`);
@@ -5742,7 +5754,7 @@ function saveSettings(event) {
     const waApiToken = (document.getElementById('settingsWaApiToken')?.value || '').trim();
     const waApiVersion = (document.getElementById('settingsWaApiVersion')?.value || 'v21.0').trim();
     const waDispatchDelayMs = Math.max(300, parseInt(document.getElementById('settingsWaDispatchDelayMs')?.value, 10) || 600);
-    const waMenuUrl = (document.getElementById('settingsWaMenuUrl')?.value || 'https://pizzariafinamassa.com.br/').trim();
+    const waMenuUrl = (document.getElementById('settingsWaMenuUrl')?.value || 'https://jcfood.com.br/').trim();
     const waBackendProxy = (document.getElementById('settingsWaBackendProxyUrl')?.value || '').trim();
 
     const waCampaignsConfig = {
@@ -5758,6 +5770,20 @@ function saveSettings(event) {
     };
 
     menuData.settings.whatsappCampaigns = waCampaignsConfig;
+
+    // Voice Assistant Settings (JC Food Voice Assistant)
+    const voiceEnabled = document.getElementById('settingsVoiceEnabled')?.checked !== false;
+    const voiceName = (document.getElementById('settingsVoiceName')?.value || 'Assistente JC').trim();
+    const voiceRate = parseFloat(document.getElementById('settingsVoiceRate')?.value) || 1.05;
+    const voiceGreeting = (document.getElementById('settingsVoiceGreeting')?.value || '').trim();
+
+    menuData.settings.voiceAssistant = {
+        enabled: voiceEnabled,
+        assistantName: voiceName,
+        voiceRate: voiceRate,
+        greeting: voiceGreeting,
+        autoListen: true
+    };
     if (typeof WhatsAppService !== 'undefined') {
         WhatsAppService.saveConfig(waCampaignsConfig);
     }
@@ -5866,6 +5892,18 @@ async function testWhatsAppApiConnection() {
         if (res.ok) {
             resultDiv.innerHTML = `<span style="color: #25d366; font-weight: 700;">✅ ${res.message}</span>`;
             updateWhatsAppApiUIStatus();
+
+    // Voice Assistant Settings (JC Food Voice Assistant)
+    const voiceSettings = settings.voiceAssistant || {};
+    const settingsVoiceEnabled = document.getElementById('settingsVoiceEnabled');
+    const settingsVoiceName = document.getElementById('settingsVoiceName');
+    const settingsVoiceRate = document.getElementById('settingsVoiceRate');
+    const settingsVoiceGreeting = document.getElementById('settingsVoiceGreeting');
+
+    if (settingsVoiceEnabled) settingsVoiceEnabled.checked = voiceSettings.enabled !== false;
+    if (settingsVoiceName) settingsVoiceName.value = voiceSettings.assistantName || 'Assistente JC';
+    if (settingsVoiceRate) settingsVoiceRate.value = voiceSettings.voiceRate || 1.05;
+    if (settingsVoiceGreeting) settingsVoiceGreeting.value = voiceSettings.greeting || '';
         } else {
             resultDiv.innerHTML = `<span style="color: #ef5350; font-weight: 600;">❌ ${res.message}</span>`;
         }
@@ -6157,7 +6195,7 @@ function sendMotoboySummaryWhatsApp(motoboyId) {
         return `• Pedido #${o.id}${neigh} - R$ ${fee.toFixed(2)}`;
     }).join('\n');
 
-    let msg = `📊 *EXTRATO DE CORRIDAS - FINA MASSA PIZZARIA*\n`;
+    let msg = `📊 *EXTRATO DE CORRIDAS - JC FOOD*\n`;
     msg += `👤 *Entregador:* ${motoboy.name}\n`;
     msg += `📦 *Total de Entregas:* ${motoboyOrders.length}\n`;
     msg += `💵 *TOTAL A RECEBER (CORRIDAS):* R$ ${totalFees.toFixed(2)}\n\n`;
@@ -7717,7 +7755,7 @@ function renderReceiptHTML(settlement) {
     if (!container) return;
 
     const storeSettings = (menuData && menuData.settings) ? menuData.settings : {};
-    const storeName = storeSettings.restaurantName || storeSettings.companyName || 'JC Food / Fina Massa Pizzaria';
+    const storeName = storeSettings.restaurantName || storeSettings.companyName || 'JC Food / JC Food';
     const storeCity = storeSettings.addressCity ? `${storeSettings.addressCity} – RS` : 'Nova Petrópolis – RS';
 
     let methodLabel = 'PIX';

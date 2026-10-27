@@ -1,6 +1,6 @@
-/**
+﻿/**
  * ==============================================================================
- * FINA MASSA PIZZARIA — GERENCIADOR DE CLIENTES & CRM
+ * JC FOOD — GERENCIADOR DE CLIENTES & CRM
  * ==============================================================================
  * Central de CRM, métricas de fidelização, segmentação comportamental,
  * histórico de pedidos com ticket médio, consentimento WhatsApp (LGPD)

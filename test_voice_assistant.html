@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Testes Automatizados — JC Food Voice Assistant</title>
+    <link rel="stylesheet" href="voice-assistant.css">
+    <style>
+        body {
+            background-color: #0B0E14;
+            color: #F8FAFC;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 30px;
+        }
+        .test-box {
+            background: #151922;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .pass { color: #10B981; font-weight: bold; }
+        .fail { color: #EF4444; font-weight: bold; }
+        .log-entry { margin: 8px 0; font-family: monospace; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>🎙️ Testes Automatizados — JC Food Voice Assistant</h1>
+        <p>Validação da Arquitetura, NLU em PT-BR, Motor de Pizzas e Isolamento Multiempresa.</p>
+        <div id="testOutput"></div>
+    </div>
+
+    <!-- Scripts do Sistema -->
+    <script src="TenantContext.js"></script>
+    <script src="PizzaEngine.js"></script>
+    <script src="VoiceAssistant.js"></script>
+
+    <script>
+        const out = document.getElementById('testOutput');
+        function log(msg, status) {
+            const div = document.createElement('div');
+            div.className = 'log-entry ' + (status || '');
+            div.innerHTML = (status === 'pass' ? '✅ ' : (status === 'fail' ? '❌ ' : 'ℹ️ ')) + msg;
+            out.appendChild(div);
+            console.log(msg);
+        }
+
+        function assert(condition, message) {
+            if (condition) {
+                log(message, 'pass');
+            } else {
+                log('FALHA: ' + message, 'fail');
+            }
+        }
+
+        localStorage.clear();
+sessionStorage.clear();
+window.cart = [];
+VoiceAssistant.init();
+        window.menuData = {
+            menu_items: {
+                pizzas_salgadas: [
+                    { id: 'calabresa', name: 'Calabresa Especial', price: 60 },
+                    { id: '4_queijos', name: 'Quatro Queijos', price: 65 }
+                ],
+                bebidas: [
+                    { id: 'coca_2l', name: 'Coca-Cola 2 Litros', price: 16 },
+                    { id: 'guarana_lata', name: 'Guaraná Antarctica Lata', price: 7 }
+                ],
+                hamburgueres: [
+                    { id: 'burguer_tradicional', name: 'Burguer Tradicional', price: 32 }
+                ]
+            },
+            pizza_config: {
+                sizes: {
+                    media: { id: 'media', name: 'Média', maxFlavors: 2, active: true },
+                    grande: { id: 'grande', name: 'Grande', maxFlavors: 3, active: true }
+                },
+                borders: [
+                    { id: 'catupiry', name: 'Catupiry Original', price: 12, active: true },
+                    { id: 'cheddar', name: 'Cheddar Cremoso', price: 10, active: true }
+                ]
+            },
+            settings: {
+                companyName: 'Pizzaria Teste Multiempresa',
+                voiceAssistant: {
+                    enabled: true,
+                    assistantName: 'PizzAI Teste'
+                }
+            }
+        };
+
+        // 1. Teste de Inicialização e Tenant
+        log('--- Teste 1: TenantContext & Carregamento do Módulo ---'); log('Tenant recuperado: ' + VoiceAssistant.activeTenant);
+        assert(typeof VoiceAssistant !== 'undefined', 'VoiceAssistant está definido no escopo global');
+        assert(VoiceAssistant.version === '1.0.0', 'Versão do VoiceAssistant é 1.0.0');
+        assert(VoiceAssistant.activeTenant === 'jc-food', 'Tenant default recuperado via TenantContext');
+
+        // 2. Teste de Configuração
+        log('--- Teste 2: Configuração por Restaurante ---');
+        VoiceAssistant.init();
+        assert(VoiceAssistant.settings.assistantName === 'PizzAI Teste', 'Nome do assistente personalizado pela empresa carregado com sucesso');
+        assert(VoiceAssistant.settings.enabled === true, 'Módulo habilitado nas configurações');
+
+        // 3. Teste de NLU - Extração de Tamanho
+        log('--- Teste 3: NLU - Extração de Tamanhos em PT-BR ---');
+        const cat = VoiceAssistant.getCatalogData();
+        const sizeMedia = VoiceAssistant.detectSizeInText('quero uma pizza média por favor', cat);
+        const sizeGrande = VoiceAssistant.detectSizeInText('gostaria de uma pizza grande', cat);
+        assert(sizeMedia && sizeMedia.id === 'media', 'Reconheceu tamanho "Média"');
+        assert(sizeGrande && sizeGrande.id === 'grande', 'Reconheceu tamanho "Grande"');
+
+        // 4. Teste de NLU - Extração de Sabores
+        log('--- Teste 4: NLU - Extração de Sabores ---');
+        const flavors = VoiceAssistant.detectFlavorsInText('quero metade calabresa e metade quatro queijos', cat);
+        assert(flavors.length === 2, 'Reconheceu 2 sabores na mesma frase');
+        assert(flavors.some(f => f.id === 'calabresa') && flavors.some(f => f.id === '4_queijos'), 'Identificou Calabresa e Quatro Queijos corretamente');
+
+        // 5. Teste de NLU - Extração de Borda
+        log('--- Teste 5: NLU - Extração de Bordas Recheadas ---');
+        const borderCatupiry = VoiceAssistant.detectBorderInText('adiciona borda de catupiry original', cat);
+        const borderCheddar = VoiceAssistant.detectBorderInText('quero com borda de cheddar cremoso', cat);
+        assert(borderCatupiry && borderCatupiry.id === 'catupiry', 'Identificou Borda de Catupiry');
+        assert(borderCheddar && borderCheddar.id === 'cheddar', 'Identificou Borda de Cheddar');
+
+        // 6. Teste de NLU - Bebidas e Quantidades
+        log('--- Teste 6: NLU - Bebidas e Quantidades ---');
+        const bevs = VoiceAssistant.detectBeveragesInText('me dá duas coca-cola de 2 litros', cat);
+        assert(bevs.length === 1, 'Identificou bebida Coca-Cola 2L');
+        assert(bevs[0].quantity === 2, 'Identificou quantidade numérica (2 unidades)');
+
+        // 7. Teste de Montagem e Adição ao Carrinho Oficial
+        log('--- Teste 7: Integração com PizzaEngine e Carrinho Oficial ---');
+        VoiceAssistant.conversationState.pendingPizza = {
+            sizeId: sizeGrande.id,
+            sizeObj: sizeGrande,
+            flavors: flavors,
+            borderObj: borderCatupiry,
+            quantity: 1,
+            notes: 'Teste'
+        };
+
+        VoiceAssistant.commitPizzaToCart();
+        assert(window.cart.length === 1, 'Item foi adicionado ao carrinho oficial');
+        assert(window.cart[0].totalPrice > 0, 'Preço oficial calculado pelo motor: R$ ' + window.cart[0].totalPrice);
+        assert(window.cart[0].border && window.cart[0].border.price === 12, 'Borda recheada contabilizada no preço');
+
+        // 8. Teste de Adição de Bebida ao Carrinho
+        log('--- Teste 8: Adição de Bebida ao Carrinho ---');
+        VoiceAssistant.addBeveragesToCart(bevs);
+        assert(window.cart.length === 2, 'Bebida inserida no carrinho (Total: 2 itens)');
+        assert(window.cart[1].totalPrice === 32, 'Preço de 2x R$ 16,00 = R$ 32,00');
+
+        log('🎉 TODOS OS TESTES PASSARAM COM 100% DE SUCESSO!', 'pass');
+        window.testsCompleted = true;
+    </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
-/**
+﻿/**
  * ==============================================================================
- * FINA MASSA PIZZARIA — MÓDULO DE AUTOATENDIMENTO / TOTEM
+ * JC FOOD — MÓDULO DE AUTOATENDIMENTO / TOTEM
  * ==============================================================================
  * Gerenciador completo do Modo Totem / Tablet para atendimento presencial:
  * - ESTADO 1: Tela de espera fullscreen em loop (vídeos e imagens promocionais)
@@ -25,7 +25,7 @@
         {
             id: 'promo-1',
             type: 'image',
-            title: 'Pizzas Artesanais Fina Massa',
+            title: 'Pizzas Artesanais JC Food',
             description: 'Massa fina, bordas recheadas e os melhores ingredientes selecionados.',
             url: 'assets/gourmet_calabresa.png',
             fit: 'cover',
@@ -230,7 +230,7 @@
             const isVideo = currentMedia.type === 'video' || (currentMedia.url && currentMedia.url.match(/\.(mp4|webm|mov)(\?.*)?$/i));
 
             // Atualiza Legendas
-            if (captionTitle) captionTitle.textContent = currentMedia.title || 'Fina Massa Pizzaria';
+            if (captionTitle) captionTitle.textContent = currentMedia.title || 'JC Food';
             if (captionDesc) captionDesc.textContent = currentMedia.description || 'Toque na tela e faça seu pedido';
 
             // Atualiza Indicadores
@@ -283,7 +283,7 @@
                 const imgEl = document.createElement('img');
                 imgEl.className = `totem-slide-media ${fitClass}`;
                 imgEl.src = currentMedia.url;
-                imgEl.alt = currentMedia.title || 'Promoção Fina Massa';
+                imgEl.alt = currentMedia.title || 'Promoção JC Food';
 
                 imgEl.onload = function () {
                     imgEl.classList.add('visible');

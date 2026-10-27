@@ -1,6 +1,6 @@
-/**
+﻿/**
  * ==============================================================================
- * FINA MASSA PIZZARIA — GERENCIADOR DE PUBLICIDADE DO TOTEM / AUTOATENDIMENTO
+ * JC FOOD — GERENCIADOR DE PUBLICIDADE DO TOTEM / AUTOATENDIMENTO
  * ==============================================================================
  * Módulo administrativo para controle das mídias publicitárias (vídeos e imagens)
  * exibidas na tela de espera do totem físico na pizzaria.
@@ -301,10 +301,10 @@ function deleteTotemMedia(mediaId) {
 }
 
 /**
- * Inicializa mídias padrão da Fina Massa no Firebase com 1 clique
+ * Inicializa mídias padrão da JC Food no Firebase com 1 clique
  */
 function populateDefaultTotemMedia() {
-    if (!confirm('Deseja carregar a lista de mídias promocionais oficiais da Fina Massa?')) {
+    if (!confirm('Deseja carregar a lista de mídias promocionais oficiais da JC Food?')) {
         return;
     }
 
@@ -312,7 +312,7 @@ function populateDefaultTotemMedia() {
         'promo-1': {
             id: 'promo-1',
             type: 'image',
-            title: 'Pizzas Artesanais Fina Massa',
+            title: 'Pizzas Artesanais JC Food',
             description: 'Massa fina, bordas recheadas e os melhores ingredientes selecionados.',
             url: 'assets/gourmet_calabresa.png',
             fit: 'cover',
@@ -358,7 +358,7 @@ function populateDefaultTotemMedia() {
     totemMediaDbRef().set(defaults)
         .then(() => {
             if (typeof showToast === 'function') {
-                showToast('Mídias oficiais da Fina Massa configuradas com sucesso!', 'success');
+                showToast('Mídias oficiais da JC Food configuradas com sucesso!', 'success');
             }
         })
         .catch(err => {

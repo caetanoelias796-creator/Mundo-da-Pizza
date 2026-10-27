@@ -1,6 +1,6 @@
-# Pasta de Dados — Fina Massa Pizzaria
+﻿# Pasta de Dados — JC Food
 
-Esta pasta reúne a estrutura de dados, configurações, esquema de cardápio e regras do banco de dados do projeto **Fina Massa Pizzaria**.
+Esta pasta reúne a estrutura de dados, configurações, esquema de cardápio e regras do banco de dados do projeto **JC Food**.
 
 ---
 

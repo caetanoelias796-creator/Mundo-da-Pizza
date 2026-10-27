@@ -1,6 +1,6 @@
-/**
+﻿/**
  * ==============================================================================
- * FINA MASSA PIZZARIA — MÓDULO DE CAMPANHAS WHATSAPP (CRM & MARKETING)
+ * JC FOOD — MÓDULO DE CAMPANHAS WHATSAPP (CRM & MARKETING)
  * ==============================================================================
  * FASE 5.1: ENVIO AUTOMÁTICO EM LOTE COM WHATSAPP BUSINESS CLOUD API
  * Construtor, segmentação LGPD estrita, personalização ({nome}, {link}),
@@ -13,7 +13,7 @@ let allCampaignsList = [];
 let currentCampaignDraft = {
     title: '',
     description: '',
-    template: 'Olá, {nome}! 🍕 Tudo bem?\n\nHoje é dia de pizza na Fina Massa! Dá uma olhada nas nossas promoções e faça seu pedido direto pelo nosso cardápio digital:\n\n👉 {link}\n\nEsperamos você! Bom apetite! 😋',
+    template: 'Olá, {nome}! 🍕 Tudo bem?\n\nHoje é dia de pizza na JC Food! Dá uma olhada nas nossas promoções e faça seu pedido direto pelo nosso cardápio digital:\n\n👉 {link}\n\nEsperamos você! Bom apetite! 😋',
     targetSegment: 'authorized_all',
     selectedRecipients: []
 };
@@ -185,7 +185,7 @@ function openNewCampaignModal() {
     currentCampaignDraft = {
         title: '',
         description: '',
-        template: 'Olá, {nome}! 🍕 Tudo bem?\n\nHoje é dia de pizza na Fina Massa! Dá uma olhada nas nossas promoções e faça seu pedido direto pelo nosso cardápio digital:\n\n👉 {link}\n\nEsperamos você! Bom apetite! 😋',
+        template: 'Olá, {nome}! 🍕 Tudo bem?\n\nHoje é dia de pizza na JC Food! Dá uma olhada nas nossas promoções e faça seu pedido direto pelo nosso cardápio digital:\n\n👉 {link}\n\nEsperamos você! Bom apetite! 😋',
         targetSegment: 'authorized_all',
         selectedRecipients: []
     };
@@ -1087,7 +1087,7 @@ function openCampaignFinalReportModal(stats) {
     const errEl = document.getElementById('reportMetricErrors');
     const retryErrorsBtn = document.getElementById('btnReportRetryErrors');
 
-    if (titleEl && activeDispatchCampaign) titleEl.textContent = `🍕 ${activeDispatchCampaign.title || 'Campanha Fina Massa'}`;
+    if (titleEl && activeDispatchCampaign) titleEl.textContent = `🍕 ${activeDispatchCampaign.title || 'Campanha JC Food'}`;
     if (totEl) totEl.textContent = stats.total || 0;
     if (sentEl) sentEl.textContent = stats.sent || 0;
     if (delivEl) delivEl.textContent = 0; // Entregue oficial depende de webhook

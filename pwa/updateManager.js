@@ -1,5 +1,5 @@
-/* ==========================================================================
-   Update Manager - Fina Massa Pizzaria PWA
+﻿/* ==========================================================================
+   Update Manager - JC Food PWA
    Identidade Visual: Dark Premium (#121419) + Ouro Oficial (#F5A623)
    ========================================================================== */
 
@@ -111,7 +111,7 @@ window.PWAUpdateManager = {
             }
           }
         </style>
-        <img src="assets/logo.png" alt="Fina Massa" style="
+        <img src="assets/logo.png" alt="JC Food" style="
           width: 44px;
           height: 44px;
           border-radius: 50%;

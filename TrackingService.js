@@ -1,5 +1,5 @@
-/* ==========================================================================
-   TrackingService.js - Módulo Centralizado de Tracking para Fina Massa Pizzaria
+﻿/* ==========================================================================
+   TrackingService.js - Módulo Centralizado de Tracking para JC Food
    Suporta Meta Pixel, Google Tag Manager (GTM) e Google Analytics 4 (GA4)
    ========================================================================== */
 

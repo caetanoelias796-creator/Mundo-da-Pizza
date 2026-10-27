@@ -1,4 +1,4 @@
-# Mídias Promocionais do Totem de Autoatendimento — Fina Massa Pizzaria
+﻿# Mídias Promocionais do Totem de Autoatendimento — JC Food
 
 Esta pasta foi criada para armazenar os vídeos e imagens promocionais que serão exibidos na **Tela de Espera (Painel de Publicidade)** do Totem / Tablet de autoatendimento.
 

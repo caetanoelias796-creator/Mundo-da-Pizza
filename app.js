@@ -1,5 +1,5 @@
-/* ==========================================================================
-   Fina Massa Pizzaria - Motor do CardÃ¡pio & Delivery Online
+﻿/* ==========================================================================
+   JC Food - Motor do CardÃ¡pio & Delivery Online
    ========================================================================== */
 
 // Firebase Initialization (Centralizada e segura)
@@ -22,7 +22,7 @@ let customerLocation = null;
 let currentCustomizingProduct = null;
 let customizerQuantity = 1;
 
-// State para Customizador Dinâmico de Produtos e Pizzas Fina Massa
+// State para Customizador Dinâmico de Produtos e Pizzas JC Food
 let currentConfiguredProduct = null;
 let currentConfiguredSelections = {};
 let currentConfiguredQuantity = 1;
@@ -31,7 +31,7 @@ let currentConfiguredComment = '';
 // Storage key isolada para JC Food
 const CART_STORAGE_KEY = 'jc_food_cart';
 
-// Fallback Menu Neutro â€” Fina Massa Pizzaria
+// Fallback Menu Neutro â€” JC Food
 const DEFAULT_MENU_FALLBACK = {
     "menu_items": {
         "hamburgueres": [],
@@ -752,7 +752,7 @@ function getActivePizzaConfig() {
 let currentPizzaState = {
     selectedSize: 'grande',
     selectedFlavors: [],
-    // REGRA COMERCIAL PROVISÃ“RIA â€” AGUARDANDO CONFIRMAÃ‡ÃƒO DA FINA MASSA
+    // REGRA COMERCIAL PROVISÃ“RIA â€” AGUARDANDO CONFIRMAÃ‡ÃƒO DA JC FOOD
     pricingRule: 'HIGHEST',
     selectedBorder: '',
     selectedExtras: [],
@@ -2125,7 +2125,7 @@ function addPizzaWizardToCart() {
 window.addPizzaWizardToCart = addPizzaWizardToCart;
 
 /* ==========================================================================
-   Customizador Dinâmico de Produtos e Pizzas Fina Massa (optionGroups)
+   Customizador Dinâmico de Produtos e Pizzas JC Food (optionGroups)
    ========================================================================== */
 
 function openGenericProductCustomizer(productId, categoryKey) {
@@ -2204,7 +2204,7 @@ function openGenericProductCustomizer(productId, categoryKey) {
     if (title) title.innerText = product.name;
     if (desc) desc.innerText = product.description || '';
     if (img) img.src = resolveProductImage(product, categoryKey || product.category);
-    if (badge) badge.innerText = product.categoryName || (product.slices ? `${product.slices} Fatias` : 'Fina Massa');
+    if (badge) badge.innerText = product.categoryName || (product.slices ? `${product.slices} Fatias` : 'JC Food');
     let displayBase = product.displayPrice !== undefined ? product.displayPrice : (product.basePrice !== undefined ? product.basePrice : (product.price || 0));
     const isPizzaProd = (product.category && product.category.startsWith('pizzas_')) || (categoryKey && categoryKey.startsWith('pizzas_')) || (product.id && String(product.id).startsWith('pizza_'));
     const isFractionalPizza = product.pricingMode === 'options_sum' || product.type === 'pizza_fracionada' || product.fractional === true;
@@ -3123,7 +3123,7 @@ function submitOrder() {
 }
 
 function buildOrderWhatsAppMessage(order) {
-    let text = `ðŸ• *NOVO PEDIDO - FINA MASSA PIZZARIA* ðŸ•\n`;
+    let text = `ðŸ• *NOVO PEDIDO - JC FOOD* ðŸ•\n`;
     text += `*Pedido:* #${order.id}\n`;
     text += `*Data:* ${order.date} Ã s ${order.time}\n\n`;
     text += `ðŸ‘¤ *Cliente:* ${order.clientName}\n`;
@@ -3259,7 +3259,7 @@ function hideGlobalLoading() {
 }
 
 /* ==========================================================================
-   Customer WhatsApp Auth & Account Controls (Fina Massa)
+   Customer WhatsApp Auth & Account Controls (JC Food)
    ========================================================================== */
 
 let pendingAuthPhone = '';

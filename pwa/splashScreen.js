@@ -1,5 +1,5 @@
-/* ==========================================================================
-   Splash Screen - Fina Massa Pizzaria PWA
+﻿/* ==========================================================================
+   Splash Screen - JC Food PWA
    ========================================================================== */
 
 window.PWASplashScreen = {
@@ -47,7 +47,7 @@ window.PWASplashScreen = {
           }
         </style>
         
-        <img src="assets/logo.png" alt="Fina Massa Pizzaria" style="
+        <img src="assets/logo.png" alt="JC Food" style="
           width: 120px;
           height: 120px;
           border-radius: 50%;
@@ -67,7 +67,7 @@ window.PWASplashScreen = {
           margin: 0 0 6px 0;
           color: #F5A623;
           text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
-        ">Fina Massa Pizzaria</h1>
+        ">JC Food</h1>
         
         <p style="
           font-size: 13px;

@@ -1,5 +1,5 @@
-/* ==========================================================================
-   Fina Massa Pizzaria - Painel Administrativo & Cozinha (Kitchen & Admin Dashboard)
+﻿/* ==========================================================================
+   JC Food - Painel Administrativo & Cozinha (Kitchen & Admin Dashboard)
    Identidade Visual: Bordô (#74112B) + Dourado (#DCA744) + Branco (#FFFFFF / #FAF8F5)
    ========================================================================== */
 
@@ -52,7 +52,7 @@ input, select, textarea {
    1. LOGIN OVERLAY
    ========================================================================== */
 /* ==========================================================================
-   1. LOGIN OVERLAY (Identidade Oficial Fina Massa)
+   1. LOGIN OVERLAY (Identidade Oficial JC Food)
    ========================================================================== */
 .login-overlay {
     position: fixed;

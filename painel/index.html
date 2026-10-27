@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -142,7 +142,7 @@
                 <header class="content-header">
                     <div class="header-title">
                         <h1>Gerenciador de Pedidos</h1>
-                        <p>Monitore e imprima as vias de produção da Fina Massa Pizzaria</p>
+                        <p>Monitore e imprima as vias de produção da JC Food</p>
                     </div>
                     
                     <div class="header-actions">
@@ -307,13 +307,13 @@
                 </div>
             </div>
 
-            <!-- SECTION CUSTOMERS: CRM DE CLIENTES (FINA MASSA PIZZARIA) -->
+            <!-- SECTION CUSTOMERS: CRM DE CLIENTES (JC FOOD) -->
             <div id="section-customers" class="display-none">
                 <!-- Header -->
                 <header class="content-header">
                     <div class="header-title">
                         <h1>Clientes / CRM</h1>
-                        <p>Gestão completa da base de clientes, ticket médio, histórico e fidelização da Fina Massa Pizzaria</p>
+                        <p>Gestão completa da base de clientes, ticket médio, histórico e fidelização da JC Food</p>
                     </div>
                     
                     <div class="header-actions">
@@ -570,7 +570,7 @@
                 </div>
             </div>
 
-            <!-- SECTION 2: MENU MANAGER (FINA MASSA PIZZARIA) -->
+            <!-- SECTION 2: MENU MANAGER (JC FOOD) -->
             <div id="section-menu" class="display-none">
                 <!-- Header -->
                 <header class="content-header">
@@ -801,7 +801,7 @@
                                     Regra de Cálculo para Sabores Mistos (Tradicional + Especial)
                                 </label>
                                 <select id="pizzaPricingRuleSelect" style="padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 13.5px; cursor: pointer; max-width: 440px; width: 100%;">
-                                    <option value="HIGHEST">Cobrar pelo sabor de MAIOR VALOR (Padrão Fina Massa)</option>
+                                    <option value="HIGHEST">Cobrar pelo sabor de MAIOR VALOR (Padrão JC Food)</option>
                                     <option value="AVERAGE">Cobrar pela MÉDIA ARITMÉTICA dos sabores</option>
                                 </select>
                                 <p style="font-size: 12px; color: var(--text-muted); margin: 6px 0 0 0; line-height: 1.4;">
@@ -1310,7 +1310,7 @@
 
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label for="settingsWaMenuUrl" style="font-size: 12px; font-weight: 600; color: var(--text-light);">URL Oficial do Cardápio ({link})</label>
-                                <input type="url" id="settingsWaMenuUrl" placeholder="https://pizzariafinamassa.com.br/" value="https://pizzariafinamassa.com.br/" style="padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 13px;">
+                                <input type="url" id="settingsWaMenuUrl" placeholder="https://jcfood.com.br/" value="https://jcfood.com.br/" style="padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 13px;">
                                 <small style="color: var(--text-muted); font-size: 10.5px;">Link dinâmico que substituirá a tag {link} em todas as mensagens das campanhas.</small>
                             </div>
 
@@ -1469,6 +1469,48 @@
                             <button type="button" class="btn-status-next" onclick="addBairroRow()" style="padding: 8px 12px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
                                 <span class="material-symbols-rounded" style="font-size: 18px;">add</span>
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Assistente de Voz com IA Card (JC Food Voice Assistant) -->
+                    <div class="prices-table-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                            <h3 style="margin: 0; color: var(--text-main); font-family: var(--font-display); font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                                <span class="material-symbols-rounded" style="color: var(--primary);">mic</span>
+                                ATENDIMENTO POR VOZ COM IA (VOICE ASSISTANT)
+                            </h3>
+                            <span class="crm-badge" style="background: rgba(255,107,0,0.15); color: var(--primary); font-weight: 700; padding: 4px 10px; border-radius: 6px; font-size: 12px;">Módulo IA Ativo</span>
+                        </div>
+                        <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;">Permite que seus clientes conversem por voz com a IA no cardápio para montar pizzas, escolher lanches e bebidas com facilidade.</p>
+
+                        <!-- Toggle Ativar Atendimento por Voz -->
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <span style="font-size: 13px; font-weight: 700; color: var(--text-main); display: block;">Habilitar Botão "Fale seu Pedido"</span>
+                                <small style="color: var(--text-muted); font-size: 11px;">Exibe o botão de voz no topo do cardápio e flutuante na tela do cliente.</small>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="settingsVoiceEnabled" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <!-- Campos de Configuração -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 12px;">
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="settingsVoiceName" style="font-size: 13px; font-weight: 500; color: var(--text-light);">Nome do Assistente Virtual</label>
+                                <input type="text" id="settingsVoiceName" placeholder="Ex: Assistente JC" style="padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
+                            </div>
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="settingsVoiceRate" style="font-size: 13px; font-weight: 500; color: var(--text-light);">Velocidade de Fala (1.0 = Normal)</label>
+                                <input type="number" step="0.05" min="0.8" max="1.4" id="settingsVoiceRate" placeholder="1.05" style="padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label for="settingsVoiceGreeting" style="font-size: 13px; font-weight: 500; color: var(--text-light);">Mensagem de Boas-Vindas Inicial</label>
+                            <input type="text" id="settingsVoiceGreeting" placeholder="Ex: Olá! Posso anotar seu pedido hoje? O que você gostaria de pedir?" style="padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);">
+                            <small style="color: var(--text-muted); font-size: 11px;">O assistente falará e exibirá esta mensagem ao abrir a conversa.</small>
                         </div>
                     </div>
 
@@ -1753,7 +1795,7 @@
                         <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Cadastre vídeos ou imagens para passar em loop na tela de espera do tablet.</p>
                         <button type="button" class="btn-status-next" onclick="populateDefaultTotemMedia()" style="display: inline-flex; align-items: center; gap: 8px; border-radius: var(--radius-sm); border: none; padding: 8px 16px; cursor: pointer; font-weight: 600; font-size: 13px; margin: 0 auto;">
                             <span class="material-symbols-rounded" style="font-size: 18px;">auto_awesome</span>
-                            <span>Carregar Mídias Oficiais da Fina Massa</span>
+                            <span>Carregar Mídias Oficiais da JC Food</span>
                         </button>
                     </div>
                 </div>
@@ -2361,7 +2403,7 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
                             <span id="customModalBasePrice" style="color: var(--primary); font-weight: 700; font-size: 13.5px;">A partir de R$ 0,00</span>
-                            <span id="customModalCategoryLabel" style="color: var(--text-muted); font-size: 12px;">• Fina Massa</span>
+                            <span id="customModalCategoryLabel" style="color: var(--text-muted); font-size: 12px;">• JC Food</span>
                         </div>
                     </div>
                 </div>
@@ -2428,7 +2470,7 @@
                         <span class="material-symbols-rounded" style="font-size: 24px;">local_pizza</span>
                     </div>
                     <div>
-                        <h3 style="margin: 0; font-size: 18px; font-family: var(--font-display); color: var(--text-main);">Montar Pizza Fina Massa</h3>
+                        <h3 style="margin: 0; font-size: 18px; font-family: var(--font-display); color: var(--text-main);">Montar Pizza JC Food</h3>
                         <p style="margin: 2px 0 0 0; font-size: 12px; color: var(--text-muted);">Selecione o tamanho e formato de sabores:</p>
                     </div>
                 </div>
@@ -2893,7 +2935,7 @@
                     <span class="material-symbols-rounded" style="font-size: 32px;">check_circle</span>
                 </div>
                 <h3 style="margin: 0; color: var(--text-main); font-family: var(--font-display); font-size: 20px;">CAMPANHA CONCLUÍDA</h3>
-                <p id="reportCampaignTitle" style="margin: 6px 0 0 0; font-size: 14px; font-weight: 700; color: var(--primary);">🍕 Fina Massa Pizzaria</p>
+                <p id="reportCampaignTitle" style="margin: 6px 0 0 0; font-size: 14px; font-weight: 700; color: var(--primary);">🍕 JC Food</p>
             </div>
 
             <!-- Grid de Métricas Reais -->

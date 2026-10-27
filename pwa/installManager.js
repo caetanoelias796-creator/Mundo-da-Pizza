@@ -1,5 +1,5 @@
-/* ==========================================================================
-   Install Manager - Fina Massa Pizzaria PWA
+﻿/* ==========================================================================
+   Install Manager - JC Food PWA
    ========================================================================== */
 
 window.PWAInstallManager = {
@@ -153,7 +153,7 @@ window.PWAInstallManager = {
           color: #ffffff;
           position: relative;
         ">
-          <img src="assets/logo.png" alt="Fina Massa Pizzaria Logo" style="
+          <img src="assets/logo.png" alt="JC Food Logo" style="
             width: 72px;
             height: 72px;
             border-radius: 50%;
@@ -169,7 +169,7 @@ window.PWAInstallManager = {
             font-weight: 700;
             color: #F5A623;
             margin: 0 0 10px 0;
-          ">📱 Instale o aplicativo da Fina Massa Pizzaria</h3>
+          ">📱 Instale o aplicativo da JC Food</h3>
 
           <ul style="
             text-align: left;
@@ -245,7 +245,7 @@ window.PWAInstallManager = {
     } else if (this.isIOS()) {
       this.showIOSInstructionsModal();
     } else {
-      alert('Para instalar o aplicativo do Fina Massa Pizzaria, utilize a opção "Adicionar à Tela Inicial" ou "Instalar Aplicativo" nas opções do seu navegador.');
+      alert('Para instalar o aplicativo do JC Food, utilize a opção "Adicionar à Tela Inicial" ou "Instalar Aplicativo" nas opções do seu navegador.');
     }
   },
 

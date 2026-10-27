@@ -1,5 +1,5 @@
-/**
- * FINA MASSA PIZZARIA - MODULO DE PEDIDO DE ATENDIMENTO / PEDIDO MANUAL
+﻿/**
+ * JC FOOD - MODULO DE PEDIDO DE ATENDIMENTO / PEDIDO MANUAL
  */
 let manualOrderState = {
     origin: 'WhatsApp',
@@ -687,7 +687,7 @@ function openProductCustomizationModal(productId, categoryKey) {
 
     if (titleEl) titleEl.textContent = product.name;
     if (badgeEl) {
-        badgeEl.textContent = product.slices ? `${product.slices} Fatias` : (product.categoryName || 'Fina Massa');
+        badgeEl.textContent = product.slices ? `${product.slices} Fatias` : (product.categoryName || 'JC Food');
     }
     if (basePriceEl) {
         const startPrice = getProductStartingPrice(product);

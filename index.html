@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -34,6 +34,8 @@
     <link rel="stylesheet" href="index.css?v=7">
     <!-- Totem / Autoatendimento CSS -->
     <link rel="stylesheet" href="totem.css?v=1">
+    <!-- Voice Assistant with AI CSS -->
+    <link rel="stylesheet" href="voice-assistant.css?v=1.0.0">
     
     <!-- PWA & Mobile Optimization -->
     <link rel="manifest" href="manifest.json">
@@ -50,7 +52,7 @@
             <img src="assets/simbolo_branco.png" alt="Logo" class="totem-header-logo" onerror="this.src='assets/logo-icon.png'">
             <div>
                 <h1 class="totem-header-title">
-                    <span>Fina Massa Pizzaria</span>
+                    <span>JC Food</span>
                     <span class="totem-header-badge">AUTOATENDIMENTO</span>
                 </h1>
             </div>
@@ -77,9 +79,9 @@
         <!-- Topo da Tela de Espera -->
         <div class="totem-idle-header">
             <div class="totem-idle-pizzeria-info">
-                <img src="assets/simbolo_branco.png" alt="Fina Massa" class="totem-idle-logo" onerror="this.src='assets/logo.png'">
+                <img src="assets/simbolo_branco.png" alt="JC Food" class="totem-idle-logo" onerror="this.src='assets/logo.png'">
                 <div>
-                    <h2 class="totem-idle-pizzeria-title">Fina Massa Pizzaria</h2>
+                    <h2 class="totem-idle-pizzeria-title">JC Food</h2>
                     <p class="totem-idle-pizzeria-tagline">Pizzas Artesanais &amp; Lanches Especiais</p>
                 </div>
             </div>
@@ -95,7 +97,7 @@
         <!-- Rodapé & Chamada "TOQUE PARA FAZER SEU PEDIDO" -->
         <div class="totem-idle-cta-wrapper">
             <div class="totem-idle-caption">
-                <h3 class="totem-idle-caption-title" id="totemIdleCaptionTitle">Pizzas Artesanais Fina Massa</h3>
+                <h3 class="totem-idle-caption-title" id="totemIdleCaptionTitle">Pizzas Artesanais JC Food</h3>
                 <p class="totem-idle-caption-desc" id="totemIdleCaptionDesc">Massa fina, bordas recheadas e os melhores ingredientes selecionados.</p>
             </div>
             
@@ -181,6 +183,11 @@
             </p>
             
             <div class="hero-actions">
+                <button type="button" class="btn btn-voice-hero" id="jcVoiceHeroBtn" onclick="VoiceAssistant.open()" title="Fazer Pedido por Voz">
+                    <span class="material-symbols-rounded voice-mic-icon">mic</span>
+                    <span>FALE SEU PEDIDO</span>
+                    <span class="voice-badge-ai">IA</span>
+                </button>
                 <a href="#categoriesNav" class="btn btn-hero-primary">
                     <i class="fas fa-utensils"></i> Explorar Cardápio
                 </a>
@@ -827,8 +834,8 @@
                 <span class="material-symbols-rounded">close</span>
             </button>
             <div class="auth-card-header">
-                <img src="assets/logo.png" alt="Fina Massa Pizzaria" class="auth-logo">
-                <h2 class="auth-brand-name">FINA MASSA PIZZARIA</h2>
+                <img src="assets/logo.png" alt="JC Food" class="auth-logo">
+                <h2 class="auth-brand-name">JC FOOD</h2>
                 <p class="auth-brand-tagline">Sua pizza favorita está a poucos cliques. 🍕</p>
             </div>
 
@@ -867,7 +874,7 @@
                     <label class="auth-marketing-label" style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; user-select: none;">
                         <input type="checkbox" id="authMarketingCheckbox" checked style="margin-top: 3px; accent-color: #25d366; width: 18px; height: 18px; cursor: pointer;">
                         <span style="font-size: 12.5px; color: rgba(255, 255, 255, 0.85); line-height: 1.4;">
-                            Quero receber novidades e promoções exclusivas da <strong>Fina Massa</strong> pelo WhatsApp. 🍕📲
+                            Quero receber novidades e promoções exclusivas da <strong>JC Food</strong> pelo WhatsApp. 🍕📲
                         </span>
                     </label>
                 </div>
@@ -1075,7 +1082,7 @@
                 <span class="material-symbols-rounded">check</span>
             </div>
             <h2 class="totem-success-title">PEDIDO REALIZADO! 🎉</h2>
-            <p class="totem-success-subtitle">Obrigado por pedir na Fina Massa Pizzaria! 🍕</p>
+            <p class="totem-success-subtitle">Obrigado por pedir na JC Food! 🍕</p>
 
             <div class="totem-order-ticket">
                 <div class="totem-order-number-label">SENHA / PEDIDO Nº</div>
@@ -1107,5 +1114,8 @@
 
     <!-- Theme & Palette Manager (Studio de Cores) -->
     <script src="ThemeManager.js?v=1"></script>
+
+    <!-- JC Food Voice Assistant with AI Engine -->
+    <script src="VoiceAssistant.js?v=1.0.0"></script>
 </body>
 </html>

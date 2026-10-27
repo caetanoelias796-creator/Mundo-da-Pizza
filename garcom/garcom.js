@@ -1,5 +1,5 @@
-/* ==========================================================================
-   Fina Massa Pizzaria - Módulo Garçom (Atendimento de Mesas)
+﻿/* ==========================================================================
+   JC Food - Módulo Garçom (Atendimento de Mesas)
    ========================================================================== */
 
 // Firebase Initialization (Centralizada e segura)
@@ -220,7 +220,7 @@ function getActiveTableComanda(tableIdentifier, specificComandaId = null) {
 }
 
 // Fallback Menu Items (Pizzas, Calzones, Bebidas, etc.)
-// Itens padrão neutros - Fina Massa Pizzaria
+// Itens padrão neutros - JC Food
 let DEFAULT_MENU_ITEMS = {};
 
 /* ==========================================================================
@@ -531,7 +531,7 @@ function parseMenuItems(menuItemsObj, pizzaPricesObj) {
         }
     });
 
-    // Se a lista estiver vazia por qualquer motivo, carregar itens padrão da Fina Massa
+    // Se a lista estiver vazia por qualquer motivo, carregar itens padrão da JC Food
     if (list.length === 0) {
         Object.keys(DEFAULT_MENU_ITEMS).forEach(cat => {
             DEFAULT_MENU_ITEMS[cat].forEach(item => {
